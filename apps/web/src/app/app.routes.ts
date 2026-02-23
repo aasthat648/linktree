@@ -18,4 +18,8 @@ export const routes: Routes = [
     path: 'username',
     loadComponent: () => import('./features/username/username').then((m) => m.Username),
   },
+  {
+    path: 'home',
+    loadComponent: () => import('./layout/home/home').then((m) => m.HomeLayout),
+  },
 ];
