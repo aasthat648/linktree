@@ -70,10 +70,11 @@ export const changePasswordSchema = z.object({
 
 // --- output/response schemas ---
 export const userResponseSchema = z.object({
-  _id: objectId,
+  id: objectId,
   name: z.string(),
   username: z.string(),
   email: z.string(),
+  token: z.string(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
