@@ -31,6 +31,7 @@ export const getProfileService = async (
   }
 };
 
+
 export const createProfileService = async (
   data: CreateProfileBody,
 ): Promise<Result<ProfileResponse>> => {
@@ -132,3 +133,4 @@ export const changeUsernameService = async (
     return fail('DB_ERROR', 'Failed to change username');
   }
 };
+
