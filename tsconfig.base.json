@@ -10,7 +10,7 @@
             "@shared-types/*": [
                 "packages/shared-types/src/*"
             ],
-            "@validation/*": [
+            "@linktree/validation/*": [
                 "packages/validation/src/*"
             ],
             "@config/*": [
