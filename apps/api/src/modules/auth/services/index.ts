@@ -1,7 +1,8 @@
 import { User } from '@/models/users';
+import { createProfileService } from '@/modules/profile/services';
 import { generateToken, hashPassword, verifyPassword } from '@/utils';
 import { fail, ok, Result } from '@/utils/result';
-import { RegisterBody, LoginBody, UserResponse } from '@linktree/validation';
+import { RegisterBody, LoginBody, UserResponse, ChangePasswordBody } from '@linktree/validation';
 
 export const registerService = async (
   data: RegisterBody,
@@ -36,6 +37,13 @@ export const registerService = async (
     const token = generateToken({
       id: user._id.toString(),
       email: user.email,
+    });
+
+    await createProfileService({
+      user_id: user._id.toString(),
+      display_name: user.name,
+      bio: '',
+      avatar_url: '',
     });
 
     const response: UserResponse = {
@@ -95,3 +103,6 @@ export const loginService = async (
     return fail('DB_ERROR', 'Failed to login user');
   }
 };
+
+
+

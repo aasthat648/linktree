@@ -1,12 +1,9 @@
-// profile.zod.ts
 import { z } from "zod";
 
-// --- base helpers ---
 const objectId = z
   .string()
   .refine((val) => /^[0-9a-fA-F]{24}$/.test(val), "Invalid ObjectId");
 
-// --- input schemas ---
 export const createProfileBodySchema = z.object({
   user_id: objectId,
   display_name: z.string().trim().min(1).max(50),
@@ -28,7 +25,6 @@ export const updateProfileBodySchema = z.object({
     .optional(),
 });
 
-// --- output/response schemas ---
 export const profileResponseSchema = z.object({
   user_id: objectId,
   display_name: z.string(),
@@ -38,10 +34,8 @@ export const profileResponseSchema = z.object({
   updated_at: z.date(),
 });
 
-// --- route params ---
 export const profileUserIdParamSchema = z.object({ userId: objectId });
 
-// --- inferred types ---
 export type CreateProfileBody = z.infer<typeof createProfileBodySchema>;
 export type UpdateProfileBody = z.infer<typeof updateProfileBodySchema>;
 export type ProfileResponse = z.infer<typeof profileResponseSchema>;

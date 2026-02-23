@@ -1,16 +1,12 @@
-// user.zod.ts
 import { z } from "zod";
 
-// --- base helpers ---
 const objectId = z
   .string()
   .refine((val) => /^[0-9a-fA-F]{24}$/.test(val), "Invalid ObjectId");
 
-// --- shared enums/constants ---
 export const USERNAME_REGEX = /^[a-z0-9_.]+$/;
 export const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
 
-// --- input schemas ---
 export const registerBodySchema = z.object({
   name: z.string().trim().min(1).max(50),
   username: z
@@ -68,7 +64,6 @@ export const changePasswordSchema = z.object({
     .regex(/[0-9]/, "Password must contain at least one number"),
 });
 
-// --- output/response schemas ---
 export const userResponseSchema = z.object({
   id: objectId,
   name: z.string(),
@@ -79,10 +74,8 @@ export const userResponseSchema = z.object({
   updatedAt: z.date(),
 });
 
-// --- route params ---
 export const userIdParamSchema = z.object({ id: objectId });
 
-// --- inferred types ---
 export type RegisterBody = z.infer<typeof registerBodySchema>;
 export type LoginBody = z.infer<typeof loginBodySchema>;
 export type UpdateUserBody = z.infer<typeof updateUserBodySchema>;
