@@ -64,6 +64,16 @@ export const changePasswordSchema = z.object({
     .regex(/[0-9]/, "Password must contain at least one number"),
 });
 
+export const changeUsernameSchema = z.object({
+  username: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(3)
+    .max(30)
+    .regex(USERNAME_REGEX, "Username can only contain lowercase letters, numbers, underscores and dots"),
+});
+
 export const userResponseSchema = z.object({
   id: objectId,
   name: z.string(),
@@ -80,5 +90,6 @@ export type RegisterBody = z.infer<typeof registerBodySchema>;
 export type LoginBody = z.infer<typeof loginBodySchema>;
 export type UpdateUserBody = z.infer<typeof updateUserBodySchema>;
 export type ChangePasswordBody = z.infer<typeof changePasswordSchema>;
+export type ChangeUsernameBody = z.infer<typeof changeUsernameSchema>;
 export type UserResponse = z.infer<typeof userResponseSchema>;
 export type UserIdParam = z.infer<typeof userIdParamSchema>;

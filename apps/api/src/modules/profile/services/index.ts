@@ -1,6 +1,9 @@
 import { Profile } from "@/models/profile";
+import { User } from "@/models/users";
+import { createThemeService } from "@/modules/theme/services";
+import { generateToken } from "@/utils";
 import { fail, ok, Result } from "@/utils/result";
-import { CreateProfileBody, ProfileResponse, UpdateProfileBody } from "@linktree/validation";
+import { ChangeUsernameBody, CreateProfileBody, ProfileResponse, UpdateProfileBody, UserResponse } from "@linktree/validation";
 
 export const getProfileService = async (
   userId: string,
@@ -50,6 +53,11 @@ export const createProfileService = async (
       updated_at: profile.updated_at,
     };
 
+    await createThemeService(user_id, {
+      type: 'solid',
+      value: '#ffffff',
+    });
+
     return ok(response);
   } catch (error) {
     console.log(error);
@@ -84,3 +92,43 @@ export const updateProfileService = async (
   }
 };
 
+export const changeUsernameService = async (
+  userId: string,
+  data: ChangeUsernameBody,
+): Promise<Result<UserResponse>> => {
+  try {
+
+    const isUsernameExists = await User.findOne({ username: data.username }).lean();
+
+    if (isUsernameExists && isUsernameExists._id.toString() !== userId) {
+      return fail('ALREADY_EXISTS', 'Username already exists');
+    }
+
+    const user = await User.findOneAndUpdate({ user_id: userId }, { username: data.username }, { new: true });
+
+    if (!user) {
+      return fail('NOT_FOUND', 'User not found');
+    }
+
+    const token = generateToken({
+      id: user._id.toString(),
+      email: user.email,
+    })
+
+
+    const response: UserResponse = {
+      id: user._id.toString(),
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      token,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+
+    return ok(response);
+  } catch (error) {
+    console.log(error);
+    return fail('DB_ERROR', 'Failed to change username');
+  }
+};

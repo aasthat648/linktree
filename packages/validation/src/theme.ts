@@ -11,7 +11,6 @@ const objectId = z
 
 // --- input schemas ---
 export const createThemeBodySchema = z.object({
-  user_id: objectId,
   type: z.enum(BACKGROUND_TYPE_ENUM),
   value: z.string().superRefine((val, ctx) => {
     const type = (ctx as any).parent.type;
@@ -25,7 +24,7 @@ export const createThemeBodySchema = z.object({
 });
 
 export const updateThemeBodySchema = z.object({
-  type: z.enum(BACKGROUND_TYPE_ENUM).optional(),
+  type: z.enum(BACKGROUND_TYPE_ENUM),
   value: z.string().superRefine((val, ctx) => {
     const type = (ctx as any).parent.type;
     if (type === "image" && !/^https?:\/\/.+/.test(val))
@@ -34,7 +33,7 @@ export const updateThemeBodySchema = z.object({
       ctx.addIssue({ code: "custom", message: "Gradient must start with 'bg-gradient'" });
     if (type === "solid" && !/^#[0-9a-fA-F]{6}$/.test(val))
       ctx.addIssue({ code: "custom", message: "Solid color must be 6-digit hex (#ffffff)" });
-  }).optional(),
+  }),
 });
 
 // --- output/response schemas ---
@@ -43,8 +42,7 @@ export const themeResponseSchema = z.object({
   user_id: objectId,
   type: z.enum(BACKGROUND_TYPE_ENUM),
   value: z.string(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+
 });
 
 // --- route params ---
