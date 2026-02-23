@@ -1,13 +1,12 @@
-import mongoose from 'mongoose';
-import { User } from '@/models/user';
+import { User } from '@/models/users';
+import { createProfileService } from '@/modules/profile/services';
 import { generateToken, hashPassword, verifyPassword } from '@/utils';
 import { fail, ok, Result } from '@/utils/result';
-import { CreateUser, LoginUser } from '@linktree/validation';
-import { AuthResponse } from '@linktree/shared-types';
+import { RegisterBody, LoginBody, UserResponse, ChangePasswordBody } from '@linktree/validation';
 
 export const registerService = async (
-  data: CreateUser,
-): Promise<Result<AuthResponse>> => {
+  data: RegisterBody,
+): Promise<Result<UserResponse>> => {
   try {
     const { name, username, email, password } = data;
 
@@ -40,7 +39,14 @@ export const registerService = async (
       email: user.email,
     });
 
-    const response: AuthResponse = {
+    await createProfileService({
+      user_id: user._id.toString(),
+      display_name: user.name,
+      bio: '',
+      avatar_url: '',
+    });
+
+    const response: UserResponse = {
       id: user._id.toString(),
       name: user.name,
       username: user.username,
@@ -58,8 +64,8 @@ export const registerService = async (
 };
 
 export const loginService = async (
-  data: LoginUser,
-): Promise<Result<AuthResponse>> => {
+  data: LoginBody,
+): Promise<Result<UserResponse>> => {
   try {
     const { email, password } = data;
 
@@ -81,7 +87,7 @@ export const loginService = async (
       email: user.email,
     });
 
-    const response: AuthResponse = {
+    const response: UserResponse = {
       id: user._id.toString(),
       name: user.name,
       username: user.username,
@@ -97,3 +103,6 @@ export const loginService = async (
     return fail('DB_ERROR', 'Failed to login user');
   }
 };
+
+
+

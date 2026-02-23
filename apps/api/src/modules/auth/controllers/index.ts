@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { createUserSchema, loginUserSchema } from '@linktree/validation';
+import { registerBodySchema, loginBodySchema } from '@linktree/validation';
 import { loginService, registerService } from '@/modules/auth/services';
 import { HttpStatus } from '@/types';
 import { sendError, sendSuccess, setCookie } from '@/utils';
@@ -8,7 +8,7 @@ import { errorReasonToHttpStatus } from '@/utils/http-mapper';
 import { removeCookie } from '@/utils/cookie';
 
 export const register = async (req: Request, res: Response) => {
-  const { success, error, data } = createUserSchema.safeParse(req.body);
+  const { success, error, data } = registerBodySchema.safeParse(req.body);
 
   if (!success) {
     return sendError(res, zodError(error), HttpStatus.BAD_REQUEST);
@@ -28,7 +28,7 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
-  const { success, error, data } = loginUserSchema.safeParse(req.body);
+  const { success, error, data } = loginBodySchema.safeParse(req.body);
 
   if (!success) {
     return sendError(res, zodError(error), HttpStatus.BAD_REQUEST);
