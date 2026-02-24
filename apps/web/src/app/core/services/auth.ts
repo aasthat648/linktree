@@ -24,6 +24,7 @@ export class AuthService {
           return;
         }
         return this.authStore.setUser(res.data);
+        console.log(res.data);
       }),
     );
   }

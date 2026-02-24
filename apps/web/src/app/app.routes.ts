@@ -1,5 +1,10 @@
 import { Routes } from '@angular/router';
 import { Landing } from './features/landing/landing';
+import { Link } from './features/link/link';
+import { Design } from './features/design/design';
+import { Account } from './features/account/account';
+import { dashboardLayout } from './layout/dashboad/dashboard';
+import { Insight } from './features/insight/insight';
 
 export const routes: Routes = [
   {
@@ -21,5 +26,16 @@ export const routes: Routes = [
   {
     path: 'home',
     loadComponent: () => import('./layout/home/home').then((m) => m.HomeLayout),
+  },
+  {
+    path: 'dashboard',
+    component: dashboardLayout,
+    children: [
+      { path: '', redirectTo: 'link', pathMatch: 'full' },
+      { path: 'link', component: Link, data: { name: 'Link', rightSidebar: true } },
+      { path: 'design', component: Design, data: { name: 'Design', rightSidebar: true } },
+      { path: 'insight', component: Insight, data: { name: 'Insights', rightSidebar: false } },
+      { path: 'account', component: Account, data: { name: 'Account', rightSidebar: false } },
+    ],
   },
 ];

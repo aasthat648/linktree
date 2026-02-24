@@ -46,7 +46,7 @@ export class Login {
       next: (res) => {
         this.toastr.success('Successful Login!!!');
 
-        this.router.navigate(['/']);
+        this.router.navigate(['dashboard/link']);
       },
       error: (err) => {
         const errorMessage = this.errorHandleService.handleStatus(err.status);
