@@ -25,39 +25,44 @@
       </div>
 
       <!-- linktree heading -->
-      <div class="px-4 pt-5 pb-1">
+      <div class="flex flex-row gap-2 items-center px-4 pt-5 pb-1">
+        <lucide-icon name="cannabis"></lucide-icon>
         <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">My Linktree</h2>
       </div>
 
       <!-- menu button -->
       <div class="flex flex-col p-2 text-sm">
-        <button
+        <a
           [routerLink]="['/dashboard/link']"
-          class="text-left px-4 py-2 hover:bg-gray-300 transition rounded-2xl"
+          class="flex items-center space-x-3 px-4 py-2 rounded-2xl hover:bg-gray-300 transition-colors cursor-pointer"
         >
-          Link
-        </button>
+          <lucide-icon name="link" class="w-5 h-5 text-gray-700"></lucide-icon>
+          <span class="text-gray-700 font-medium">Link</span>
+        </a>
 
-        <button
+        <a
           [routerLink]="['/dashboard/design']"
-          class="text-left px-4 py-2 hover:bg-gray-300 transition rounded-2xl"
+          class="flex items-center space-x-3 px-4 py-2 rounded-2xl hover:bg-gray-300 transition-colors cursor-pointer"
         >
-          Design
-        </button>
+          <lucide-icon name="pencil" class="w-5 h-5 text-gray-700"></lucide-icon>
+          <span class="text-gray-700 font-medium">Design</span>
+        </a>
 
-        <button
+        <a
           [routerLink]="['/dashboard/insight']"
-          class="text-left px-4 py-2 hover:bg-gray-300 transition rounded-2xl"
+          class="flex items-center space-x-3 px-4 py-2 rounded-2xl hover:bg-gray-300 transition-colors cursor-pointer"
         >
-          Insights
-        </button>
+          <lucide-icon name="chart-line" class="w-5 h-5 text-gray-700"></lucide-icon>
+          <span class="text-gray-700 font-medium">Insights</span>
+        </a>
 
-        <button
+        <a
           [routerLink]="['/dashboard/account']"
-          class="text-left px-4 py-2 hover:bg-gray-300 transition rounded-2xl"
+          class="flex items-center space-x-3 px-4 py-2 rounded-2xl hover:bg-gray-300 transition-colors cursor-pointer"
         >
-          Account
-        </button>
+          <lucide-icon name="circle-user-round" class="w-5 h-5 text-gray-700"></lucide-icon>
+          <span class="text-gray-700 font-medium">Account</span>
+        </a>
       </div>
     </div>
 

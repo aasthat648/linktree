@@ -1,3 +1,4 @@
+import { IconsModule } from '@/app/shared/components/icons';
 import { AuthStore } from '@/app/store/auth';
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
@@ -13,7 +14,7 @@ import { filter, map, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, RouterOutlet, CommonModule],
+  imports: [RouterLink, RouterOutlet, CommonModule, IconsModule],
   templateUrl: './dashboard.html',
 })
 export class dashboardLayout {

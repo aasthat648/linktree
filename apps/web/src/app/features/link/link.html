@@ -1,0 +1,19 @@
+<div class="flex flex-col min-h-112 items-center justify-start pt-10 gap-4">
+  <!-- Main green/red container -->
+  <div class="flex flex-row h-25 w-120">
+    <div class="flex items-center justify-center h-full w-[25%]">
+      <img
+        src="images/user.png"
+        alt="Profile"
+        class="w-22 h-22 rounded-full border border-gray-300 object-cover"
+      />
+    </div>
+    <div class="flex flex-col h-full w-full p-5 gap-2">
+      <div class="h-6 w-full">{{ userEmail$ | async }}</div>
+      <div class="h-9 w-full bg-amber-300"></div>
+    </div>
+  </div>
+
+  <!-- Button below -->
+  <button class="h-10 w-120 rounded-2xl bg-blue-600 text-white">+ Add</button>
+</div>
