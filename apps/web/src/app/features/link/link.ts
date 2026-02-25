@@ -2,16 +2,18 @@ import { IconsModule } from '@/app/shared/components/icons';
 import { AuthStore } from '@/app/store/auth';
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { filter, map, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-link',
-  imports: [CommonModule, IconsModule],
+  imports: [CommonModule, IconsModule, FormsModule],
   templateUrl: './link.html',
 })
 export class Link {
   userEmail$!: Observable<string>;
   showPopup = false;
+  selectedItems: any[] = [];
 
   constructor(private authStore: AuthStore) {
     this.userEmail$ = this.authStore.user$.pipe(
@@ -41,6 +43,20 @@ export class Link {
     { name: 'Mail', icon: 'images/mail.png' },
     { name: 'AppleMusic', icon: 'images/applemusic.png' },
   ];
+
+  selectSocial(item: any) {
+    this.selectedItems.push({
+      ...item,
+      title: '',
+      url: '',
+      enabled: true,
+    });
+    this.togglePopup();
+  }
+
+  deleteLink(index: number) {
+    this.selectedItems.splice(index, 1);
+  }
 
   togglePopup() {
     this.showPopup = !this.showPopup;

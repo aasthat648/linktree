@@ -18,6 +18,7 @@ import {
   Plus,
   Cross,
   X,
+  Trash2,
 } from 'lucide-angular';
 
 @NgModule({
@@ -40,6 +41,7 @@ import {
       Twitch,
       Plus,
       X,
+      Trash2,
     }),
   ],
 

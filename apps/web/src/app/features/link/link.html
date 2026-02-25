@@ -1,6 +1,6 @@
-<div class="flex flex-col min-h-112 items-center justify-start pt-10 gap-4">
-  <!-- Main green/red container -->
-  <div class="flex flex-row h-25 w-120">
+<div class="flex flex-col h-full items-center pt-10 gap-4">
+  <!--profile -->
+  <div class="flex flex-row h-25 w-120 shrink-0">
     <div class="flex items-center justify-center h-full w-[25%]">
       <img
         src="images/user.png"
@@ -8,9 +8,13 @@
         class="w-22 h-22 rounded-full border border-gray-300 object-cover"
       />
     </div>
+
     <div class="flex flex-col h-full w-full p-5 gap-2">
-      <div class="h-6 w-full">{{ userEmail$ | async }}</div>
-      <div class="flex flex-row gap-1 h-9 w-full text-gray-400">
+      <div class="h-6 w-full font-medium">
+        {{ userEmail$ | async }}
+      </div>
+
+      <div class="flex flex-row gap-2 h-9 w-full text-gray-400">
         <lucide-icon name="instagram"></lucide-icon>
         <lucide-icon name="facebook"></lucide-icon>
         <lucide-icon name="twitter"></lucide-icon>
@@ -21,30 +25,73 @@
     </div>
   </div>
 
-  <!-- Button below -->
-  <button class="h-10 w-120 rounded-2xl bg-blue-600 text-white" (click)="togglePopup()">
+  <!-- button -->
+  <button
+    class="h-10 w-120 rounded-2xl bg-blue-600 text-white shrink-0 hover:bg-blue-700 transition"
+    (click)="togglePopup()"
+  >
     + Add
   </button>
 
-  <!-- Popup modal -->
+  <!-- scroll link  -->
+  <div class="flex-1 w-full flex justify-center overflow-y-auto">
+    <div class="flex flex-col gap-4 pb-6">
+      <div
+        *ngFor="let item of selectedItems; let i = index"
+        class="bg-gray-200 rounded-2xl p-4 h-20 w-120 flex flex-col gap-3 shadow-sm"
+      >
+        <div class="flex justify-between items-center">
+          <!-- left -->
+          <div class="flex gap-3 items-center">
+            <img [src]="item.icon" class="w-10 h-10 rounded-full object-cover" />
+
+            <div class="flex flex-col">
+              <input
+                [(ngModel)]="item.title"
+                placeholder="Title"
+                class="bg-transparent outline-none font-medium"
+              />
+
+              <input
+                [(ngModel)]="item.url"
+                placeholder="URL"
+                class="bg-transparent outline-none text-sm text-gray-500"
+              />
+            </div>
+          </div>
+
+          <!-- right side -->
+          <div class="flex items-center gap-4">
+            <button (click)="deleteLink(i)" class="text-red-500 hover:text-red-700 transition">
+              <lucide-icon name="trash-2" size="18"></lucide-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- popup -->
   <div
     *ngIf="showPopup"
     class="fixed inset-0 flex items-center justify-center bg-black/40 z-50 p-4"
   >
-    <div class="bg-white rounded-xl w-96 max-h-[80vh] shadow-lg flex flex-col">
-      <!-- Sticky header -->
+    <div class="bg-white rounded-xl overflow-hidden w-120 max-h-[80vh] shadow-lg flex flex-col">
+      <!-- Popup Header -->
       <div class="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
         <h2 class="text-lg font-semibold">Add Social Link</h2>
+
         <button class="text-gray-500" (click)="togglePopup()">
           <lucide-icon name="x"></lucide-icon>
         </button>
       </div>
 
-      <!-- Scrollable content -->
-      <div class="flex flex-col gap-2 p-3 overflow-y-auto" style="max-height: calc(80vh - 64px)">
+      <!-- sroll popup -->
+      <div class="flex flex-col gap-2 p-3 overflow-y-auto flex-1">
         <button
           *ngFor="let item of socialItems"
-          class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 rounded-md"
+          (click)="selectSocial(item)"
+          class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 rounded-md transition"
         >
           <img [src]="item.icon" class="w-9 h-9 rounded-full object-cover border" />
           <span>{{ item.name }}</span>
