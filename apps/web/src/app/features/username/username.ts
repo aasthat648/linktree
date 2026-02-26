@@ -1,7 +1,7 @@
 import { AuthStore } from '@/app/store/auth';
 import { Component } from '@angular/core';
-import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-username',
@@ -9,10 +9,13 @@ import { RouterLink } from '@angular/router';
   templateUrl: './username.html',
 })
 export class Username {
-  constructor(private authStore: AuthStore) {}
+  constructor(
+    private authStore: AuthStore,
+    private router: Router,
+  ) {}
 
   usernameForm = new FormGroup({
-    username: new FormControl(''),
+    username: new FormControl('', Validators.required),
   });
 
   ngOnInit(): void {
@@ -25,5 +28,11 @@ export class Username {
     }
   }
 
-  handleUsername() {}
+  handleUsername() {
+    if (this.usernameForm.invalid) return;
+
+    const username = this.usernameForm.value.username;
+
+    this.router.navigate(['/dashboard']);
+  }
 }
