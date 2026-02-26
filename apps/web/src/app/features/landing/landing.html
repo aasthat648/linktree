@@ -1,0 +1,143 @@
+<div class="bg-[#D2E823] h-screen w-screen px-32">
+  <!-- nav bar -->
+  <div class="flex items-center justify-center pt-10">
+    <div class="flex flex-row bg-white w-[98%] h-20 rounded-full">
+      <div class="flex flex-row items-center pl-10 gap-1 w-[50%] h-full rounded-l-4xl">
+        <h1 class="font-semibold text-2xl">Linktree</h1>
+        <lucide-icon name="cannabis" class="fill-black"></lucide-icon>
+      </div>
+      <div class="flex flex-row items-center justify-end pr-10 gap-3 w-[50%] h-full rounded-r-4xl">
+        <button [routerLink]="['/login']" class="w-20 h-12 bg-gray-200 text-black rounded-3xl">
+          Login
+        </button>
+        <button [routerLink]="['/register']" class="w-22 h-12 bg-lime-950 text-white rounded-3xl">
+          Sign up
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-row h-[85%] w-full px-10">
+    <!-- left panal -->
+    <div class="flex flex-col justify-center pl-3 h-full w-[50%] gap-5">
+      <h1 class="text-7xl font-extrabold font-serif text-lime-900">A link in bio built for you.</h1>
+      <p class="text-lg">
+        Join 70M+ people using Linktree for their link in bio. One link to help you share everything
+        you create, curate and sell from your Instagram, TikTok, Twitter, YouTube and other social
+        media profiles.
+      </p>
+      <div class="flex flex-row gap-2 mt-8">
+        <div class="flex items-center bg-white rounded-xl px-2 py-3">
+          <span class="text-gray-500 select-none"> linktr.ee/ </span>
+
+          <input type="text" class="flex-1 bg-transparent outline-none ml-1" />
+        </div>
+        <button class="px-7 py-3 bg-lime-900 text-sm rounded-3xl text-white">
+          Get started for free
+        </button>
+      </div>
+    </div>
+    <!-- right panal -->
+    <div class="flex items-center justify-center h-full w-[50%]">
+      <img src="images/linklanding.png" alt="" class="h-130 w-140 rounded-4xl" />
+    </div>
+  </div>
+</div>
+<div class="flex items-center bg-[#2665D6] h-177 w-screen px-32">
+  <div class="flex flex-row h-130 w-full">
+    <div class="flex justify-center h-full w-[47%]">
+      <img src="images/linklanding2.png" alt="" class="h-130 w-140" />
+    </div>
+    <div class="flex flex-col justify-center h-full w-[53%]">
+      <h1 class="text-5xl font-extrabold text-[#D2E823]">
+        Create and customize<br />
+        your Linktree in minutes
+      </h1>
+      <p class="text-white pt-6 pb-8">
+        Connect all your content across social media, websites, stores and more in<br />
+        one link in bio. Customize every detail or let Linktree automatically enhance it<br />
+        to match your brand and drive more clicks.
+      </p>
+      <button class="h-12 w-60 bg-[#D2E823] text-sm rounded-3xl font-semibold">
+        Get started for free
+      </button>
+    </div>
+  </div>
+</div>
+<div class="flex items-center bg-[#780016] h-164 w-screen px-32">
+  <div class="flex flex-row h-130 w-full">
+    <div class="flex flex-col justify-center h-full w-[53%] pl-10">
+      <h1 class="text-5xl font-extrabold text-[#E9C0E9]">Share your Linktree anywhere you like!</h1>
+      <p class="text-white pt-6 pb-8">
+        Add your unique Linktree URL to all the platforms and places you find your<br />
+        audience. Then use your QR code to drive your offline traffic back to your link <br />in
+        bio.
+      </p>
+      <button class="h-12 w-60 bg-[#E9C0E9] text-sm rounded-3xl font-semibold">
+        Get started for free
+      </button>
+    </div>
+    <div class="flex justify-center h-full w-[47%]">
+      <img src="images/linklanding3.png" alt="" class="h-130 w-140" />
+    </div>
+  </div>
+</div>
+<div class="flex items-center bg-[#E8EFD6] h-175 w-screen px-32">
+  <div class="flex flex-row h-130 w-full">
+    <div class="flex justify-center h-full w-[47%]">
+      <img src="images/linklanding4.png" alt="" class="h-130 w-140" />
+    </div>
+    <div class="flex flex-col justify-center h-full w-[53%]">
+      <h1 class="text-5xl font-extrabold">Analyze your audience and keep them engaged</h1>
+      <p class="pt-6 pb-8">
+        Track your engagement over time, monitor revenue and learn what’s converting <br />your
+        audience. Make informed updates on the fly to keep them coming back.
+      </p>
+      <button class="h-12 w-60 bg-[#E9C0E9] text-sm rounded-3xl font-semibold">
+        Get started for free
+      </button>
+    </div>
+  </div>
+</div>
+<div class="flex items-center flex-col bg-[#780016] min-h-screen py-20 w-screen px-32">
+  <h1 class="text-center text-5xl md:text-6xl font-bold text-pink-200 mb-16">
+    Questions? Answered
+  </h1>
+
+  <div class="max-w-3xl mx-auto space-y-6">
+    <div
+      *ngFor="let faq of faqs; let i = index"
+      class="bg-[#6E0000] rounded-3xl p-7 transition-all duration-500"
+    >
+      <div class="flex justify-between items-center cursor-pointer" (click)="toggle(i)">
+        <h2 class="text-xl md:text-2xl font-semibold text-pink-200">
+          {{ faq.question }}
+        </h2>
+
+        <svg
+          class="w-6 h-6 text-pink-200 transition-transform duration-500"
+          [ngClass]="{ 'rotate-180': openIndex === i }"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </div>
+
+      <div
+        class="overflow-hidden transition-all duration-500 ease-in-out"
+        [ngClass]="openIndex === i ? 'max-h-125 mt-6 opacity-100' : 'max-h-0 opacity-0'"
+      >
+        <p class="text-pink-200 text-lg leading-relaxed whitespace-pre-line">
+          {{ faq.answer }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="bg-[#502274] h-200 w-screen"></div>
