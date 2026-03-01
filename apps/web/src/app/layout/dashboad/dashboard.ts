@@ -10,6 +10,8 @@ import {
   Router,
   RouterLink,
   RouterOutlet,
+  RouterLinkActive,
+  RouterModule,
 } from '@angular/router';
 import { filter, map, Observable } from 'rxjs';
 

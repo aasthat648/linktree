@@ -88,44 +88,28 @@
         <div class="flex items-center gap-4">
           <div class="w-16 h-16 bg-gray-300 rounded-full">
             <img
-              src="images/user.png"
+              [src]="imagePreview ? imagePreview : 'images/user.png'"
               alt="Profile"
               class="rounded-full border border-gray-300 object-cover"
             />
           </div>
 
+          <input
+            type="file"
+            #fileInput
+            class="hidden"
+            accept="image/*"
+            (change)="onFileSelected($event)"
+          />
+
           <button
-            class="flex flex-row gap-1 items-center px-4 py-2 bg-black text-white rounded-full text-sm"
+            type="button"
+            (click)="fileInput.click()"
+            class="flex flex-row gap-1 items-center px-4 py-2 bg-black text-white rounded-full text-sm hover:bg-gray-800 transition"
           >
-            <lucide-icon name="plus" class="h-4 w-4 text-gray-300"></lucide-icon><span>Add</span>
+            <lucide-icon name="plus" class="h-4 w-4 text-gray-300"></lucide-icon>
+            <span>Add</span>
           </button>
-        </div>
-      </div>
-
-      <!-- Profile Layout -->
-      <div class="mb-4">
-        <p class="text-sm mb-3">Profile image layout</p>
-
-        <div class="flex gap-3">
-          <div class="flex flex-col items-center gap-2 cursor-pointer group">
-            <div
-              class="w-58 h-10 bg-gray-200 rounded-2xl flex items-center justify-center transition-all duration-200 group-hover:bg-gray-300"
-            >
-              <lucide-icon name="circle-user-round" class="w-5 h-5 text-gray-600"> </lucide-icon>
-            </div>
-
-            <p class="text-sm text-gray-600 font-medium">Classic</p>
-          </div>
-
-          <div class="flex flex-col items-center gap-2 cursor-pointer group">
-            <div
-              class="w-58 h-10 bg-gray-200 rounded-2xl flex items-center justify-center transition-all duration-200 group-hover:bg-gray-300"
-            >
-              <lucide-icon name="square-user" class="w-5 h-5 text-gray-600"> </lucide-icon>
-            </div>
-
-            <p class="text-sm text-gray-600 font-medium">Hero</p>
-          </div>
         </div>
       </div>
 
@@ -134,35 +118,9 @@
         <p class="text-sm mb-2">Title</p>
         <input
           type="text"
-          [value]="userEmail$ | async"
+          [value]="Name$ | async"
           class="w-full p-2 h-10 text-sm rounded-xl border bg-white border-gray-300 focus:outline-none focus:ring-1 focus:ring-black"
         />
-      </div>
-
-      <!-- Title Style -->
-      <div>
-        <p class="text-sm mb-3">Title style</p>
-        <div class="flex gap-3">
-          <div class="flex flex-col items-center gap-2 cursor-pointer group">
-            <div
-              class="w-58 h-10 bg-gray-200 rounded-2xl flex items-center justify-center transition-all duration-200 group-hover:bg-gray-300"
-            >
-              <lucide-icon name="a-large-small" class="w-5 h-5 text-gray-600"> </lucide-icon>
-            </div>
-
-            <p class="text-sm text-gray-600 font-medium">Text</p>
-          </div>
-
-          <div class="flex flex-col items-center gap-2 cursor-pointer group">
-            <div
-              class="w-58 h-10 bg-gray-200 rounded-2xl flex items-center justify-center transition-all duration-200 group-hover:bg-gray-300"
-            >
-              <lucide-icon name="image" class="w-5 h-5 text-gray-600"> </lucide-icon>
-            </div>
-
-            <p class="text-sm text-gray-600 font-medium">Logo</p>
-          </div>
-        </div>
       </div>
     </ng-container>
 

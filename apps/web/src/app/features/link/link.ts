@@ -15,10 +15,11 @@ export class Link {
   UserName$!: Observable<string>;
   showPopup = false;
   selectedItems: any[] = [];
+  isCardOpen = false;
 
   constructor(
     private authStore: AuthStore,
-    private uiStateService: UiStateService,
+    private uiStatervice: UiStateService,
   ) {
     this.UserName$ = this.authStore.user$.pipe(
       filter((user): user is any => !!user),
@@ -55,21 +56,24 @@ export class Link {
       url: '',
       enabled: true,
     });
-    this.uiStateService.setSaveState(this.selectedItems.length > 0);
+    this.uiStatervice.setSaveState(this.selectedItems.length > 0);
     this.togglePopup();
   }
 
   deleteLink(index: number) {
     this.selectedItems.splice(index, 1);
 
-    this.uiStateService.setSaveState(this.selectedItems.length > 0);
+    this.uiStatervice.setSaveState(this.selectedItems.length > 0);
   }
 
   ngOnDestroy() {
-    this.uiStateService.setSaveState(false);
+    this.uiStatervice.setSaveState(false);
   }
 
   togglePopup() {
     this.showPopup = !this.showPopup;
+  }
+  openCard() {
+    this.isCardOpen = true;
   }
 }

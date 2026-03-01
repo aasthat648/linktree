@@ -1,3 +1,4 @@
+import { UiStateService } from '@/app/core/services/ui-state-service';
 import { IconsModule } from '@/app/shared/components/icons';
 import { AuthStore } from '@/app/store/auth';
 import { CommonModule } from '@angular/common';
@@ -12,12 +13,16 @@ type PageType = 'main' | 'header' | 'wallpaper' | 'buttons' | 'text' | 'colors';
 })
 export class Design {
   currentPage: PageType = 'main';
-  userEmail$!: Observable<string>;
+  Name$!: Observable<string>;
+  imagePreview: string | ArrayBuffer | null = null;
 
-  constructor(private authStore: AuthStore) {
-    this.userEmail$ = this.authStore.user$.pipe(
+  constructor(
+    private authStore: AuthStore,
+    private uiStateService: UiStateService,
+  ) {
+    this.Name$ = this.authStore.user$.pipe(
       filter((user): user is any => !!user),
-      map((user) => user.email),
+      map((user) => user.name),
     );
   }
 
@@ -43,5 +48,19 @@ export class Design {
 
   goBack() {
     this.currentPage = 'main';
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      this.imagePreview = reader.result;
+    };
+
+    reader.readAsDataURL(file);
   }
 }
