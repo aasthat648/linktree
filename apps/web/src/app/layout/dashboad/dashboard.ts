@@ -1,3 +1,4 @@
+import { UiStateService } from '@/app/core/services/ui-state-service';
 import { IconsModule } from '@/app/shared/components/icons';
 import { AuthStore } from '@/app/store/auth';
 import { CommonModule } from '@angular/common';
@@ -21,16 +22,19 @@ export class dashboardLayout {
   pageName = '';
   showRightSidebar = false;
   userName$!: Observable<string>;
+  showSave$!: Observable<boolean>;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private authStore: AuthStore,
+    private uiStateService: UiStateService,
   ) {
     this.userName$ = this.authStore.user$.pipe(
       filter((user): user is any => !!user),
       map((user) => user.username),
     );
+    this.showSave$ = this.uiStateService.showSave$;
     console.log('usrname', this.userName$);
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
       let currentRoute = this.route;

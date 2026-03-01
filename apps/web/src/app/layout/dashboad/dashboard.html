@@ -72,10 +72,19 @@
     [class.w-[63%]]="showRightSidebar"
     [class.w-[87%]]="!showRightSidebar"
   >
-    <div class="h-[7%] w-full border-b border-gray-200 flex items-center justify-start pl-6">
+    <div class="h-[7%] w-full border-b border-gray-200 flex items-center justify-between px-6">
+      <!-- Left: Page Name -->
       <h1 class="text-xl font-semibold text-gray-800">
         {{ pageName }}
       </h1>
+
+      <!-- Right: Save Button -->
+      <button
+        *ngIf="showSave$ | async"
+        class="bg-blue-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-blue-700 transition"
+      >
+        Save Changes
+      </button>
     </div>
     <div class="w-full h-[93%]">
       <router-outlet></router-outlet>

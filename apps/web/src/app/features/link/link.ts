@@ -1,3 +1,4 @@
+import { UiStateService } from '@/app/core/services/ui-state-service';
 import { IconsModule } from '@/app/shared/components/icons';
 import { AuthStore } from '@/app/store/auth';
 import { CommonModule } from '@angular/common';
@@ -15,7 +16,10 @@ export class Link {
   showPopup = false;
   selectedItems: any[] = [];
 
-  constructor(private authStore: AuthStore) {
+  constructor(
+    private authStore: AuthStore,
+    private uiStateService: UiStateService,
+  ) {
     this.UserName$ = this.authStore.user$.pipe(
       filter((user): user is any => !!user),
       map((user) => user.username),
@@ -51,11 +55,18 @@ export class Link {
       url: '',
       enabled: true,
     });
+    this.uiStateService.setSaveState(this.selectedItems.length > 0);
     this.togglePopup();
   }
 
   deleteLink(index: number) {
     this.selectedItems.splice(index, 1);
+
+    this.uiStateService.setSaveState(this.selectedItems.length > 0);
+  }
+
+  ngOnDestroy() {
+    this.uiStateService.setSaveState(false);
   }
 
   togglePopup() {

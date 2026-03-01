@@ -18,25 +18,14 @@ export class AuthService {
   ) {}
 
   login(payload: LoginBody): Observable<ApiResponse<UserResponse>> {
-    return this.http.post<ApiResponse<UserResponse>>(`${this.API_URL}/login`, payload).pipe(
-      tap((res) => {
-        if (!res.data) {
-          return;
-        }
-        return this.authStore.setUser(res.data);
-        console.log(res.data);
-      }),
-    );
+    return this.http
+      .post<ApiResponse<UserResponse>>(`${this.API_URL}/login`, payload)
+      .pipe(tap((res) => this.authStore.setUser(res.data!)));
   }
 
   register(payload: RegisterBody): Observable<ApiResponse<UserResponse>> {
-    return this.http.post<ApiResponse<UserResponse>>(`${this.API_URL}/register`, payload).pipe(
-      tap((res) => {
-        if (!res.data) {
-          return;
-        }
-        return this.authStore.setUser(res.data);
-      }),
-    );
+    return this.http
+      .post<ApiResponse<UserResponse>>(`${this.API_URL}/register`, payload)
+      .pipe(tap((res) => this.authStore.setUser(res.data!)));
   }
 }
