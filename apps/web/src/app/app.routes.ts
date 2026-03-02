@@ -20,6 +20,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/register/register').then((m) => m.Register),
   },
   {
+    path: 'admin/login',
+    loadComponent: () => import('./features/admin/auth/login/login').then((m) => m.AdminLogin),
+  },
+  {
     path: 'username',
     loadComponent: () => import('./features/username/username').then((m) => m.Username),
   },

@@ -31,6 +31,7 @@ import {
   Blocks,
   LogOut,
   Upload,
+  Lock,
 } from 'lucide-angular';
 
 @NgModule({
@@ -65,6 +66,7 @@ import {
       MousePointerClick,
       Percent,
       Upload,
+      Lock,
     }),
   ],
 

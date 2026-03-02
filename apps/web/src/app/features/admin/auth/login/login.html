@@ -1,0 +1,49 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-100 px-6 py-16">
+  <form
+    [formGroup]="loginForm"
+    (ngSubmit)="handleLogin()"
+    class="w-full max-w-lg rounded-3xl bg-white pt-6 px-12 pb-12 shadow-xl"
+  >
+    <div class="flex flex-col items-center mb-8">
+      <lucide-icon name="lock" class="w-14 h-14 text-black mb-2" size="56"></lucide-icon>
+      <h1 class="text-3xl font-bold text-gray-800">Admin Login</h1>
+      <p class="mt-2 text-gray-500 text-base">Sign in with your admin credentials</p>
+    </div>
+
+    <div class="space-y-6">
+      <div class="relative">
+        <lucide-icon
+          name="mail"
+          class="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-400"
+        ></lucide-icon>
+        <input
+          type="email"
+          placeholder="example@domain.com"
+          formControlName="email"
+          class="w-full pl-14 pr-5 py-4 text-base rounded-2xl bg-gray-50 border border-black focus:outline-none focus:ring-2 focus:ring-black focus:border-black focus:bg-white placeholder:text-gray-400 transition"
+        />
+      </div>
+      <div class="relative">
+        <lucide-icon
+          name="lock"
+          size="24"
+          class="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-500"
+        ></lucide-icon>
+        <input
+          type="password"
+          placeholder="••••••••"
+          formControlName="password"
+          class="w-full pl-14 pr-5 py-4 text-base rounded-2xl bg-gray-50 border border-black focus:outline-none focus:ring-2 focus:ring-black focus:border-black focus:bg-white placeholder:text-gray-400 transition"
+        />
+      </div>
+    </div>
+
+    <button
+      type="submit"
+      [disabled]="isLoading"
+      class="mt-10 w-full py-4 rounded-2xl bg-blue-600 text-white text-base font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none transition"
+    >
+      {{ isLoading ? 'Signing in...' : 'Log In' }}
+    </button>
+  </form>
+</div>
