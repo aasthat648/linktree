@@ -30,6 +30,7 @@ import {
   ChevronDown,
   Blocks,
   LogOut,
+  Upload,
 } from 'lucide-angular';
 
 @NgModule({
@@ -63,6 +64,7 @@ import {
       ChevronDown,
       MousePointerClick,
       Percent,
+      Upload,
     }),
   ],
 
