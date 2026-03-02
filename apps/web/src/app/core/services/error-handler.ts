@@ -7,12 +7,12 @@ import { ToastrService } from 'ngx-toastr';
 export class ErrorHandlerService {
   constructor(private toast: ToastrService) {}
 
-  handleStatus(status: number): string {
+  handleStatus(status: number, apiMessage?: string): string {
     let message: string;
 
     switch (status) {
       case 400:
-        message = 'Something went wrong';
+        message = apiMessage?.trim() ? apiMessage : 'Invalid request. Check your input.';
         break;
 
       case 401:

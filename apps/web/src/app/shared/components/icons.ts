@@ -28,6 +28,9 @@ import {
   Percent,
   Eye,
   ChevronDown,
+  Lock,
+  LogIn,
+  User,
 } from 'lucide-angular';
 
 @NgModule({
@@ -59,6 +62,9 @@ import {
       ChevronDown,
       MousePointerClick,
       Percent,
+      Lock,
+      LogIn,
+      User,
     }),
   ],
 
