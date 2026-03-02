@@ -31,7 +31,7 @@ export const registerBodySchema = z.object({
 });
 
 export const loginBodySchema = z.object({
-  email: z.string().trim().toLowerCase().email("Invalid email format"),
+  email: z.string().trim().toLowerCase().min(1, "Email or username is required"),
   password: z.string().min(1, "Password is required"),
 });
 

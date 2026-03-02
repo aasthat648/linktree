@@ -6,13 +6,14 @@ export const hashPassword = async (password: string): Promise<string> => {
 
 export const verifyPassword = async (
   password: string,
-  hashPassword: string,
+  hashPassword: string | undefined,
 ): Promise<boolean> => {
-  if (!hashPassword) {
-    throw new Error('Invalid password hash');
+  if (!hashPassword || typeof hashPassword !== 'string') return false;
+  try {
+    return await bcrypt.compare(password, hashPassword);
+  } catch {
+    return false;
   }
-
-  return await bcrypt.compare(password, hashPassword);
 };
 
 export const removePassword = <T extends { passwordHash?: string }>(data: T) => {

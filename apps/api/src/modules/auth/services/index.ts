@@ -67,40 +67,54 @@ export const loginService = async (
   data: LoginBody,
 ): Promise<Result<UserResponse>> => {
   try {
-    const { email, password } = data;
-
-    const user = await User.findOne({ email }).lean().select('+passwordHash');
-
-    if (!user) {
+    const loginId = (data.email ?? '').trim().toLowerCase();
+    if (!loginId || !data.password) {
       return fail('UNAUTHORIZED', 'Invalid email or password');
     }
 
-    const isPasswordCorrect = await verifyPassword(password, user.passwordHash);
-    console.log('checkpoint');
+    const userDoc = await User.findOne({
+      $or: [{ email: loginId }, { username: loginId }],
+    }).select('+passwordHash');
 
+    if (!userDoc) {
+      return fail('UNAUTHORIZED', 'Invalid email or password');
+    }
+
+    const plain = userDoc.toObject ? userDoc.toObject() : (userDoc as unknown) as Record<string, unknown>;
+    const p = plain as Record<string, unknown>;
+    const hash = typeof p.passwordHash === 'string' ? p.passwordHash : undefined;
+
+    if (!hash) {
+      return fail('UNAUTHORIZED', 'Invalid email or password');
+    }
+
+    const isPasswordCorrect = await verifyPassword(data.password, hash);
     if (!isPasswordCorrect) {
       return fail('UNAUTHORIZED', 'Invalid email or password');
     }
 
-    const token = generateToken({
-      id: user._id.toString(),
-      email: user.email,
-    });
+    let token: string;
+    try {
+      token = generateToken({
+        id: String(p._id),
+        email: String(p.email ?? ''),
+      });
+    } catch {
+      return fail('UNAUTHORIZED', 'Invalid email or password');
+    }
 
     const response: UserResponse = {
-      id: user._id.toString(),
-      name: user.name,
-      username: user.username,
-      email: user.email,
+      id: String(p._id),
+      name: String(p.name ?? ''),
+      username: String(p.username ?? ''),
+      email: String(p.email ?? ''),
       token,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
+      createdAt: (p.createdAt as Date) ?? new Date(),
+      updatedAt: (p.updatedAt as Date) ?? new Date(),
     };
-
     return ok(response);
-  } catch (error) {
-    console.log(error);
-    return fail('DB_ERROR', 'Failed to login user');
+  } catch {
+    return fail('UNAUTHORIZED', 'Invalid email or password');
   }
 };
 

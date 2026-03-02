@@ -28,19 +28,23 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
-  const { success, error, data } = loginBodySchema.safeParse(req.body);
+  try {
+    const { success, error, data } = loginBodySchema.safeParse(req.body ?? {});
 
-  if (!success) {
-    return sendError(res, zodError(error), HttpStatus.BAD_REQUEST);
+    if (!success) {
+      return sendError(res, zodError(error), HttpStatus.BAD_REQUEST);
+    }
+
+    const result = await loginService(data);
+
+    if (!result.ok) {
+      return sendError(res, result.message, HttpStatus.UNAUTHORIZED);
+    }
+
+    return sendSuccess(res, result.data, HttpStatus.OK);
+  } catch (_err) {
+    return sendError(res, 'Invalid email or password', HttpStatus.UNAUTHORIZED);
   }
-
-  const result = await loginService(data);
-
-  if (!result.ok) {
-    return sendError(res, result.message, errorReasonToHttpStatus(result.reason));
-  }
-
-  return sendSuccess(res, result.data, HttpStatus.OK);
 };
 
 export const logout = async (_req: Request, res: Response) => {
