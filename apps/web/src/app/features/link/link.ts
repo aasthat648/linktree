@@ -4,25 +4,28 @@ import { AuthStore } from '@/app/store/auth';
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CreateLinkBody } from '@linktree/validation';
+import { CreateLinkBody, LinkResponse } from '@linktree/validation';
 import { ToastrService } from 'ngx-toastr';
 import { filter, map, Observable } from 'rxjs';
+import { ChangeDetectorRef, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-link',
   imports: [CommonModule, IconsModule, FormsModule],
   templateUrl: './link.html',
 })
-export class Link {
+export class Link implements OnInit {
   UserName$!: Observable<string>;
   showPopup = false;
   selectedItems: any[] = [];
   isCardOpen = false;
+  links: LinkResponse[] = [];
 
   constructor(
     private authStore: AuthStore,
     private linkService: LinkService,
     private toastr: ToastrService,
+    private cd: ChangeDetectorRef,
   ) {
     this.UserName$ = this.authStore.user$.pipe(
       filter((user): user is any => !!user),
@@ -31,7 +34,7 @@ export class Link {
   }
 
   socialItems = [
-    { platform: 'instagram', icon: 'images/insta.png' },
+    { platform: 'instagram', icon: 'images/instagram.png' },
     { platform: 'facebook', icon: 'images/facebook.png' },
     { platform: 'youtube', icon: 'images/youtube.png' },
     { platform: 'spotify', icon: 'images/spotify.png' },
@@ -63,6 +66,8 @@ export class Link {
     this.togglePopup();
   }
 
+  // create link
+
   saveSingleLink(index: number) {
     const item = this.selectedItems[index];
 
@@ -78,19 +83,73 @@ export class Link {
     };
 
     this.linkService.createLink(payload).subscribe({
-      next: (res) => {
-        console.log('Link saved!', res);
+      next: () => {
         this.toastr.success(`${item.platform} link saved successfully!`);
-        item.enabled = false;
+        this.selectedItems.splice(index, 1);
+        this.loadLinks();
       },
-      error: (err) => {
-        console.error('Failed to save link', err);
-        this.toastr.error('Failed to save link. Try again.');
+      error: () => {
+        this.toastr.error('Failed to save link.');
       },
     });
   }
 
-  deleteLink(index: number) {
+  // get link
+
+  loadLinks() {
+    this.linkService.getLink().subscribe({
+      next: (res) => {
+        if (res.data) {
+          this.links = res.data;
+          this.cd.detectChanges();
+        }
+      },
+    });
+  }
+
+  ngOnInit(): void {
+    this.loadLinks();
+  }
+
+  // update link
+
+  updateLink(link: LinkResponse) {
+    const payload = {
+      title: link.title,
+      link: link.link,
+    };
+
+    this.linkService.updateLink(link._id, payload).subscribe({
+      next: (res) => {
+        if (!res.data) {
+          this.toastr.error('Invalid response from server');
+          return;
+        }
+        this.toastr.success('Link updated successfully');
+        this.links = this.links.map((l) => (l._id === res.data!._id ? res.data! : l));
+      },
+      error: () => {
+        this.toastr.error('Update failed');
+      },
+    });
+  }
+
+  //delete link
+
+  deleteBackendLink(link: LinkResponse) {
+    this.linkService.deleteLink(link._id).subscribe({
+      next: () => {
+        this.links = this.links.filter((l) => l._id !== link._id);
+        this.cd.detectChanges();
+        console.log('After delete:', this.links);
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
+  }
+
+  deleteBlankLink(index: number) {
     this.selectedItems.splice(index, 1);
   }
 
@@ -101,6 +160,10 @@ export class Link {
     this.isCardOpen = true;
   }
 
+  trackByLink(index: number, item: LinkResponse) {
+    return item._id;
+  }
+
   openLinkInTab(link: string | undefined) {
     if (!link) return;
 
@@ -108,11 +171,4 @@ export class Link {
       window.open(link, '_blank');
     }
   }
-
-  // openLinkInTab(link: string | undefined) {
-  //   if (!link) return;
-
-  //   const formattedLink = link.startsWith('http') ? link : `https://${link}`;
-  //   window.open(formattedLink, '_blank');
-  // }
 }
