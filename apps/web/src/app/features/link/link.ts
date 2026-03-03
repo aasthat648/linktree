@@ -1,11 +1,11 @@
 import { LinkService } from '@/app/core/services/link-service';
-import { UiStateService } from '@/app/core/services/ui-state-service';
 import { IconsModule } from '@/app/shared/components/icons';
 import { AuthStore } from '@/app/store/auth';
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CreateLinkBody } from '@linktree/validation';
+import { ToastrService } from 'ngx-toastr';
 import { filter, map, Observable } from 'rxjs';
 
 @Component({
@@ -21,8 +21,8 @@ export class Link {
 
   constructor(
     private authStore: AuthStore,
-    private uiStatervice: UiStateService,
     private linkService: LinkService,
+    private toastr: ToastrService,
   ) {
     this.UserName$ = this.authStore.user$.pipe(
       filter((user): user is any => !!user),
@@ -67,7 +67,7 @@ export class Link {
     const item = this.selectedItems[index];
 
     if (!item.title || !item.link) {
-      alert('Please fill both Title and Link.');
+      this.toastr.error('Please fill both Title and Link.');
       return;
     }
 
@@ -80,24 +80,18 @@ export class Link {
     this.linkService.createLink(payload).subscribe({
       next: (res) => {
         console.log('Link saved!', res);
-        alert(`${item.platform} link saved successfully!`);
+        this.toastr.success(`${item.platform} link saved successfully!`);
         item.enabled = false;
       },
       error: (err) => {
         console.error('Failed to save link', err);
-        alert('Failed to save link. Try again.');
+        this.toastr.error('Failed to save link. Try again.');
       },
     });
   }
 
   deleteLink(index: number) {
     this.selectedItems.splice(index, 1);
-
-    this.uiStatervice.setSaveState(this.selectedItems.length > 0);
-  }
-
-  ngOnDestroy() {
-    this.uiStatervice.setSaveState(false);
   }
 
   togglePopup() {
