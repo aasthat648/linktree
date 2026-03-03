@@ -53,7 +53,7 @@ export class Link {
     this.selectedItems.push({
       ...item,
       title: '',
-      url: '',
+      link: '',
       enabled: true,
     });
     this.uiStatervice.setSaveState(this.selectedItems.length > 0);
@@ -77,11 +77,18 @@ export class Link {
     this.isCardOpen = true;
   }
 
-  openUrlInTab(url: string | undefined) {
-    if (!url) return;
+  openLinkInTab(link: string | undefined) {
+    if (!link) return;
 
-    if (url) {
-      window.open(url, '_blank');
+    if (link) {
+      window.open(link, '_blank');
     }
   }
+
+  // openLinkInTab(link: string | undefined) {
+  //   if (!link) return;
+
+  //   const formattedLink = link.startsWith('http') ? link : `https://${link}`;
+  //   window.open(formattedLink, '_blank');
+  // }
 }
