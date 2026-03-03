@@ -1,9 +1,11 @@
+import { LinkService } from '@/app/core/services/link-service';
 import { UiStateService } from '@/app/core/services/ui-state-service';
 import { IconsModule } from '@/app/shared/components/icons';
 import { AuthStore } from '@/app/store/auth';
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CreateLinkBody } from '@linktree/validation';
 import { filter, map, Observable } from 'rxjs';
 
 @Component({
@@ -20,6 +22,7 @@ export class Link {
   constructor(
     private authStore: AuthStore,
     private uiStatervice: UiStateService,
+    private linkService: LinkService,
   ) {
     this.UserName$ = this.authStore.user$.pipe(
       filter((user): user is any => !!user),
@@ -28,36 +31,63 @@ export class Link {
   }
 
   socialItems = [
-    { name: 'Instagram', icon: 'images/insta.png' },
-    { name: 'Facebook', icon: 'images/facebook.png' },
-    { name: 'YouTube', icon: 'images/youtube.png' },
-    { name: 'Spotify', icon: 'images/spotify.png' },
-    { name: 'Slack', icon: 'images/slack.png' },
-    { name: 'X', icon: 'images/x.png' },
-    { name: 'Snapchat', icon: 'images/snapchat.png' },
-    { name: 'Github', icon: 'images/github.png' },
-    { name: 'Linkedin', icon: 'images/linkedin.png' },
-    { name: 'Discord', icon: 'images/discord.png' },
-    { name: 'Telegram', icon: 'images/telegram.png' },
-    { name: 'Substack', icon: 'images/substack.png' },
-    { name: 'Pinterest', icon: 'images/pinterest.png' },
-    { name: 'Twitch', icon: 'images/twitch.png' },
-    { name: 'Whatsapp', icon: 'images/whatsapp.png' },
-    { name: 'Threads', icon: 'images/threads.png' },
-    { name: 'Reddit', icon: 'images/reddit.png' },
-    { name: 'Mail', icon: 'images/mail.png' },
-    { name: 'AppleMusic', icon: 'images/applemusic.png' },
+    { platform: 'instagram', icon: 'images/insta.png' },
+    { platform: 'facebook', icon: 'images/facebook.png' },
+    { platform: 'youtube', icon: 'images/youtube.png' },
+    { platform: 'spotify', icon: 'images/spotify.png' },
+    { platform: 'slack', icon: 'images/slack.png' },
+    { platform: 'x', icon: 'images/x.png' },
+    { platform: 'snapchat', icon: 'images/snapchat.png' },
+    { platform: 'github', icon: 'images/github.png' },
+    { platform: 'linkedin', icon: 'images/linkedin.png' },
+    { platform: 'discord', icon: 'images/discord.png' },
+    { platform: 'telegram', icon: 'images/telegram.png' },
+    { platform: 'substack', icon: 'images/substack.png' },
+    { platform: 'pinterest', icon: 'images/pinterest.png' },
+    { platform: 'twitch', icon: 'images/twitch.png' },
+    { platform: 'whatsapp', icon: 'images/whatsapp.png' },
+    { platform: 'threads', icon: 'images/threads.png' },
+    { platform: 'reddit', icon: 'images/reddit.png' },
+    { platform: 'mail', icon: 'images/mail.png' },
+    { platform: 'applemusic', icon: 'images/applemusic.png' },
   ];
 
   selectSocial(item: any) {
     this.selectedItems.push({
-      ...item,
+      platform: item.platform,
       title: '',
       link: '',
+      icon: item.icon,
       enabled: true,
     });
-    this.uiStatervice.setSaveState(this.selectedItems.length > 0);
     this.togglePopup();
+  }
+
+  saveSingleLink(index: number) {
+    const item = this.selectedItems[index];
+
+    if (!item.title || !item.link) {
+      alert('Please fill both Title and Link.');
+      return;
+    }
+
+    const payload: CreateLinkBody = {
+      platform: item.platform,
+      title: item.title,
+      link: item.link,
+    };
+
+    this.linkService.createLink(payload).subscribe({
+      next: (res) => {
+        console.log('Link saved!', res);
+        alert(`${item.platform} link saved successfully!`);
+        item.enabled = false;
+      },
+      error: (err) => {
+        console.error('Failed to save link', err);
+        alert('Failed to save link. Try again.');
+      },
+    });
   }
 
   deleteLink(index: number) {

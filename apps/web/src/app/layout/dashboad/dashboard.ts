@@ -16,7 +16,7 @@ import {
 import { filter, map, Observable } from 'rxjs';
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-dashboard',
   imports: [RouterLink, RouterOutlet, CommonModule, IconsModule],
   templateUrl: './dashboard.html',
 })
