@@ -52,8 +52,8 @@
               />
 
               <input
-                [(ngModel)]="item.url"
-                placeholder="URL"
+                [(ngModel)]="item.link"
+                placeholder="Link"
                 class="bg-transparent outline-none text-sm text-gray-500"
               />
             </div>
@@ -62,9 +62,9 @@
           <!-- right side -->
           <div class="flex items-center gap-4">
             <button
-              (click)="openUrlInTab(item.url)"
+              (click)="openLinkInTab(item.link)"
               class="text-blue-500 hover:text-blue-700 transition"
-              [disabled]="!item.url"
+              [disabled]="!item.link"
             >
               <lucide-icon name="upload" size="18"></lucide-icon>
             </button>
