@@ -91,3 +91,45 @@ export const updateThemeService = async (userId: string, data: UpdateThemeBody):
     return fail('DB_ERROR', 'Failed to update theme');
   }
 };
+
+
+export const getThemeService = async (userId: string): Promise<Result<ThemeResponse>> => {
+  try {
+    const theme = await ThemeModel.findOne({ user_id: userId }).lean();
+
+    if (!theme) {
+      return fail('NOT_FOUND', 'Theme not found');
+    }
+
+    const response: ThemeResponse = {
+      _id: theme._id.toString(),
+      user_id: theme.user_id.toString(),
+
+      background: {
+        type: theme.background.type,
+        value: theme.background.value,
+      },
+
+      button: {
+        variant: theme.button.variant,
+        radius: theme.button.radius,
+        color: theme.button.color,
+        textColor: theme.button.textColor,
+      },
+
+      text: {
+        font: theme.text.font,
+        pageColor: theme.text.pageColor,
+        titleColor: theme.text.titleColor,
+      },
+
+      createdAt: theme.created_at,
+      updatedAt: theme.updated_at,
+    };
+
+    return ok(response);
+  } catch (error) {
+    console.log(error);
+    return fail('DB_ERROR', 'Failed to get theme');
+  }
+};
