@@ -1,7 +1,9 @@
+import { ProfileService } from '@/app/core/services/profile-service';
 import { IconsModule } from '@/app/shared/components/icons';
 import { AuthStore } from '@/app/store/auth';
+import { environment } from '@/environment/environment';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { filter, map, Observable } from 'rxjs';
 
@@ -26,13 +28,15 @@ export class Design {
   imagePreview: string | ArrayBuffer | null = null;
   pageTextColor = '#000000';
   titleColor = '#000000';
+  avatarUrl: string = '';
+  title: string = '';
+  selectedFile: File | null = null;
 
-  constructor(private authStore: AuthStore) {
-    this.Name$ = this.authStore.user$.pipe(
-      filter((user): user is any => !!user),
-      map((user) => user.name),
-    );
-  }
+  constructor(
+    private authStore: AuthStore,
+    private profileService: ProfileService,
+    private cd: ChangeDetectorRef,
+  ) {}
 
   styles = [
     { id: 'fill', label: 'Fill' },
@@ -55,17 +59,54 @@ export class Design {
     this.currentPage = 'main';
   }
 
+  ngOnInit(): void {
+    this.profileService.getProfile().subscribe((res) => {
+      console.log('res', res);
+      if (res && res.data) {
+        this.title = res.data.display_name ?? 'checkin';
+
+        if (res.data.avatar_url) {
+          this.avatarUrl = `${environment.backend}${res?.data?.avatar_url}`;
+        } else {
+          this.avatarUrl = res.data.avatar_url ?? '';
+        }
+
+        console.log('Hello: ', this.avatarUrl);
+        this.cd.detectChanges();
+      }
+    });
+  }
+
   onFileSelected(event: any) {
     const file = event.target.files[0];
 
     if (!file) return;
 
+    this.selectedFile = file;
+
     const reader = new FileReader();
-
     reader.onload = () => {
-      this.imagePreview = reader.result;
+      this.avatarUrl = reader.result as string;
+      this.cd.detectChanges();
     };
-
     reader.readAsDataURL(file);
+
+    this.uploadFile(file);
+  }
+
+  uploadFile(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    this.profileService.uploadAvatar(formData).subscribe({
+      next: (res: any) => {
+        this.avatarUrl = `${environment.backend}${res?.data?.path}`; // returned from backend
+        console.log('Image: ', { image: this.avatarUrl });
+        this.cd.detectChanges();
+      },
+      error: (err) => {
+        console.error('Upload failed', err);
+      },
+    });
   }
 }
