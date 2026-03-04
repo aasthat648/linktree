@@ -8,6 +8,8 @@ import { CreateLinkBody, LinkResponse } from '@linktree/validation';
 import { ToastrService } from 'ngx-toastr';
 import { filter, map, Observable } from 'rxjs';
 import { ChangeDetectorRef, OnInit } from '@angular/core';
+import { ProfileService } from '@/app/core/services/profile-service';
+import { environment } from '@/environment/environment';
 
 @Component({
   selector: 'app-link',
@@ -20,18 +22,16 @@ export class Link implements OnInit {
   selectedItems: any[] = [];
   isCardOpen = false;
   links: LinkResponse[] = [];
+  avatarUrl: string = '';
+  name: string = '';
 
   constructor(
     private authStore: AuthStore,
     private linkService: LinkService,
     private toastr: ToastrService,
     private cd: ChangeDetectorRef,
-  ) {
-    this.UserName$ = this.authStore.user$.pipe(
-      filter((user): user is any => !!user),
-      map((user) => user.username),
-    );
-  }
+    private profileService: ProfileService,
+  ) {}
 
   socialItems = [
     { platform: 'instagram', icon: 'images/instagram.png' },
@@ -54,6 +54,25 @@ export class Link implements OnInit {
     { platform: 'mail', icon: 'images/mail.png' },
     { platform: 'applemusic', icon: 'images/applemusic.png' },
   ];
+
+  ngOnInit(): void {
+    this.loadLinks();
+    this.profileService.getProfile().subscribe((res) => {
+      console.log('res', res);
+      if (res && res.data) {
+        this.name = res.data.display_name ?? 'checkin';
+
+        if (res.data.avatar_url) {
+          this.avatarUrl = `${environment.backend}${res?.data?.avatar_url}`;
+        } else {
+          this.avatarUrl = res.data.avatar_url ?? '';
+        }
+
+        console.log('Hello: ', this.avatarUrl);
+        this.cd.detectChanges();
+      }
+    });
+  }
 
   selectSocial(item: any) {
     this.selectedItems.push({
@@ -105,10 +124,6 @@ export class Link implements OnInit {
         }
       },
     });
-  }
-
-  ngOnInit(): void {
-    this.loadLinks();
   }
 
   // update link

@@ -17,7 +17,6 @@ export class Design {
   selectedStyle: string = 'fill';
   backgroundColor: string = '#ECEEF1';
   currentPage: PageType = 'main';
-  Name$!: Observable<string>;
   gradientColor1: string = '#8B5CF6';
   gradientColor2: string = '#60A5FA';
   buttonStyle: string = 'solid';
