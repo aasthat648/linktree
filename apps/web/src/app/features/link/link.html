@@ -72,10 +72,7 @@
             <button (click)="deleteBlankLink(i)" class="text-red-500 hover:text-red-700 transition">
               <lucide-icon name="trash-2" size="18"></lucide-icon>
             </button>
-            <button
-              (click)="saveSingleLink(i)"
-              [disabled]="!item.link || !item.title || !item.enabled"
-            >
+            <button (click)="saveSingleLink(i)">
               <lucide-icon name="save" size="18"></lucide-icon>
             </button>
           </div>
@@ -123,7 +120,7 @@
             </button>
 
             <!-- Update -->
-            <button (click)="updateLink(link)" [disabled]="!link.title || !link.link">
+            <button (click)="updateLink(link)">
               <lucide-icon name="save" size="18"></lucide-icon>
             </button>
           </div>

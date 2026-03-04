@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CreateLinkBody, LinkResponse } from '@linktree/validation';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { filter, map, Observable } from 'rxjs';
 import { ChangeDetectorRef, OnInit } from '@angular/core';
 import { ProfileService } from '@/app/core/services/profile-service';
@@ -91,7 +91,7 @@ export class Link implements OnInit {
     const item = this.selectedItems[index];
 
     if (!item.title || !item.link) {
-      this.toastr.error('Please fill both Title and Link.');
+      this.toastr.info('Please fill both Title and Link.');
       return;
     }
 
@@ -107,8 +107,8 @@ export class Link implements OnInit {
         this.selectedItems.splice(index, 1);
         this.loadLinks();
       },
-      error: () => {
-        this.toastr.error('Failed to save link.');
+      error: (err) => {
+        this.toastr.error('already exist');
       },
     });
   }
@@ -123,12 +123,19 @@ export class Link implements OnInit {
           this.cd.detectChanges();
         }
       },
+      error: (err) => {
+        this.toastr.error(err);
+      },
     });
   }
 
   // update link
 
   updateLink(link: LinkResponse) {
+    if (!link.title || !link.link) {
+      this.toastr.info('Please fill both Title and Link.');
+      return;
+    }
     const payload = {
       title: link.title,
       link: link.link,
@@ -143,8 +150,8 @@ export class Link implements OnInit {
         this.toastr.success('Link updated successfully');
         this.links = this.links.map((l) => (l._id === res.data!._id ? res.data! : l));
       },
-      error: () => {
-        this.toastr.error('Update failed');
+      error: (err) => {
+        this.toastr.error(err);
       },
     });
   }
@@ -155,11 +162,12 @@ export class Link implements OnInit {
     this.linkService.deleteLink(link._id).subscribe({
       next: () => {
         this.links = this.links.filter((l) => l._id !== link._id);
+        this.toastr.success('link deleted successfully');
         this.cd.detectChanges();
         console.log('After delete:', this.links);
       },
       error: (err) => {
-        console.error(err);
+        this.toastr.error(err);
       },
     });
   }
