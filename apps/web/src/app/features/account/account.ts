@@ -26,7 +26,7 @@ export class Account implements OnInit {
     private authStore: AuthStore,
     private profileService: ProfileService,
     private cd: ChangeDetectorRef,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.profileService.getProfile().subscribe((res) => {
@@ -41,7 +41,7 @@ export class Account implements OnInit {
           this.avatarUrl = res.data.avatar_url ?? '';
         }
 
-        console.log('Hello: ', this.avatarUrl);
+        console.log('NG On Init: ', this.avatarUrl);
         this.cd.detectChanges();
       }
     });
@@ -106,11 +106,13 @@ export class Account implements OnInit {
   // }
 
   saveProfile() {
+
+
     const payload: UpdateProfileBody = {
       display_name: this.name,
       username: this.username,
       bio: this.bio ?? '',
-      avatar_url: this.avatarUrl ?? '', // Send the relative URL
+      avatar_url: this.avatarUrl.includes(environment.backend) ? this.avatarUrl.replace(environment.backend, '') : this.avatarUrl ?? '', // Send the relative URL
     };
 
     console.log('payload', payload);
