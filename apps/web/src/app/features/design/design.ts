@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UpdateProfileBody, UpdateThemeBody } from '@linktree/validation';
+import { ToastrService } from 'ngx-toastr';
 import { filter, forkJoin, map, Observable } from 'rxjs';
 
 type PageType = 'main' | 'header' | 'wallpaper' | 'buttons' | 'text' | 'colors';
@@ -39,6 +40,7 @@ export class Design {
     private profileService: ProfileService,
     private cd: ChangeDetectorRef,
     private themeService: ThemeService,
+    private toastr: ToastrService,
   ) {}
 
   styles = [
@@ -188,12 +190,12 @@ export class Design {
     this.themeService.updateTheme(payload).subscribe({
       next: (res) => {
         console.log('Theme updated:', res.data);
-        alert('Theme updated successfully!');
+        this.toastr.success('Theme updated successfully!');
         this.cd.detectChanges();
       },
       error: (err) => {
         console.error('Failed to update theme', err);
-        alert('Failed to update theme');
+        this.toastr.error(err, 'theme update failed');
       },
     });
   }
