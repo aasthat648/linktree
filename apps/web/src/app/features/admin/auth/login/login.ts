@@ -7,6 +7,14 @@ import {
   FormControl,
   Validators,
 } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { ValidationToastService } from '@/app/core/services/validation-toast';
+import { ErrorHandlerService } from '@/app/core/services/error-handler';
+import { environment } from '@/environment/environment';
+import type { AdminLogin as AdminLoginBody, AdminResponse } from '@linktree/validation';
+import type { ApiResponse } from '@linktree/shared-types';
 
 @Component({
   selector: 'app-admin-login',
@@ -16,6 +24,15 @@ import {
 })
 export class AdminLogin {
   submitted: boolean = false;
+  private readonly ADMIN_API_URL = `${environment.apicall}/admin/auth`;
+
+  constructor(
+    private http: HttpClient,
+    private toastr: ToastrService,
+    private validator: ValidationToastService,
+    private errorHandleService: ErrorHandlerService,
+    private router: Router,
+  ) {}
 
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -24,7 +41,21 @@ export class AdminLogin {
 
   handleLogin() {
     this.submitted = true;
-    if (this.loginForm.invalid) return;
-    // Add your login logic here when ready
+    if (!this.validator.validateLogin(this.loginForm)) return;
+
+    const data = this.loginForm.getRawValue() as AdminLoginBody;
+
+    this.http
+      .post<ApiResponse<AdminResponse>>(`${this.ADMIN_API_URL}/login`, data)
+      .subscribe({
+        next: () => {
+          this.toastr.success('Admin login successful');
+          this.router.navigate(['admindashboard']);
+        },
+        error: (err) => {
+          const errorMessage = this.errorHandleService.handleStatus(err.status);
+          this.toastr.error(errorMessage);
+        },
+      });
   }
 }
