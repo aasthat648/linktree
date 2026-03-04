@@ -25,6 +25,7 @@ export class Link implements OnInit {
   avatarUrl: string = '';
   name: string = '';
   username: string = '';
+  bio: string = '';
 
   constructor(
     private authStore: AuthStore,
@@ -32,7 +33,7 @@ export class Link implements OnInit {
     private toastr: ToastrService,
     private cd: ChangeDetectorRef,
     private profileService: ProfileService,
-  ) { }
+  ) {}
 
   socialItems = [
     { platform: 'instagram', icon: 'images/instagram.png' },
@@ -63,7 +64,7 @@ export class Link implements OnInit {
       if (res && res.data) {
         this.name = res.data.display_name ?? 'checkin';
         this.username = res.data.username ?? 'checkin';
-
+        this.bio = res.data.bio ?? 'Enter bio';
         if (res.data.avatar_url) {
           this.avatarUrl = `${environment.backend}${res?.data?.avatar_url}`;
         } else {
