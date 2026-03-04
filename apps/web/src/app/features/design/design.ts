@@ -1,12 +1,13 @@
 import { ProfileService } from '@/app/core/services/profile-service';
+import { ThemeService } from '@/app/core/services/theme-service';
 import { IconsModule } from '@/app/shared/components/icons';
 import { AuthStore } from '@/app/store/auth';
 import { environment } from '@/environment/environment';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { UpdateProfileBody } from '@linktree/validation';
-import { filter, map, Observable } from 'rxjs';
+import { UpdateProfileBody, UpdateThemeBody } from '@linktree/validation';
+import { filter, forkJoin, map, Observable } from 'rxjs';
 
 type PageType = 'main' | 'header' | 'wallpaper' | 'buttons' | 'text' | 'colors';
 @Component({
@@ -31,11 +32,13 @@ export class Design {
   avatarUrl: string = '';
   name: string = '';
   selectedFile: File | null = null;
+  theme: any = null;
 
   constructor(
     private authStore: AuthStore,
     private profileService: ProfileService,
     private cd: ChangeDetectorRef,
+    private themeService: ThemeService,
   ) {}
 
   styles = [
@@ -60,20 +63,42 @@ export class Design {
   }
 
   ngOnInit(): void {
-    this.profileService.getProfile().subscribe((res) => {
-      console.log('res', res);
-      if (res && res.data) {
-        this.name = res.data.display_name ?? 'checkin';
-
-        if (res.data.avatar_url) {
-          this.avatarUrl = `${environment.backend}${res?.data?.avatar_url}`;
-        } else {
-          this.avatarUrl = res.data.avatar_url ?? '';
+    // Load profile + theme together
+    forkJoin({
+      profile: this.profileService.getProfile(),
+      theme: this.themeService.getTheme(),
+    }).subscribe({
+      next: ({ profile, theme }) => {
+        // Profile
+        if (profile?.data) {
+          this.name = profile.data.display_name ?? 'checkin';
+          this.avatarUrl = profile.data.avatar_url
+            ? `${environment.backend}${profile.data.avatar_url}`
+            : (profile.data.avatar_url ?? '');
         }
 
-        console.log('Hello: ', this.avatarUrl);
+        // Theme
+        if (theme?.data) {
+          this.theme = theme.data;
+
+          // Example: apply theme to your variables
+          this.backgroundColor = this.theme.background?.value ?? this.backgroundColor;
+          this.buttonColor = this.theme.button?.color ?? this.buttonColor;
+          this.buttonTextColor = this.theme.button?.textColor ?? this.buttonTextColor;
+          this.buttonStyle = this.theme.button?.style ?? this.buttonStyle;
+          this.buttonRadius = this.theme.button?.radius ?? this.buttonRadius;
+          this.pageTextColor = this.theme.text?.pageColor ?? this.pageTextColor;
+          this.titleColor = this.theme.text?.titleColor ?? this.titleColor;
+          this.selectedStyle = this.theme.wallpaper?.style ?? this.selectedStyle;
+          this.gradientColor1 = this.theme.wallpaper?.gradient1 ?? this.gradientColor1;
+          this.gradientColor2 = this.theme.wallpaper?.gradient2 ?? this.gradientColor2;
+          this.imagePreview = this.theme.wallpaper?.image ?? null;
+        }
+        console.log('api called');
+
         this.cd.detectChanges();
-      }
+      },
+      error: (err) => console.error('Failed to load profile or theme', err),
     });
   }
 
@@ -127,6 +152,49 @@ export class Design {
         this.cd.detectChanges();
       },
       error: (err) => console.error('Update failed:', err),
+    });
+  }
+
+  saveTheme() {
+    type BackgroundType = 'solid' | 'gradient' | 'image';
+    const bgType: BackgroundType =
+      this.selectedStyle === 'fill' ? 'solid' : (this.selectedStyle as BackgroundType);
+
+    const bgValue: string =
+      this.selectedStyle === 'fill'
+        ? this.backgroundColor
+        : this.selectedStyle === 'gradient'
+          ? `linear-gradient(to right, ${this.gradientColor1}, ${this.gradientColor2})`
+          : (this.imagePreview as string) || '';
+
+    const payload: UpdateThemeBody = {
+      background: {
+        type: bgType,
+        value: bgValue,
+      },
+      button: {
+        variant: this.buttonStyle as 'solid' | 'outline',
+        radius: this.buttonRadius as 'square' | 'rounded',
+        color: this.buttonColor,
+        textColor: this.buttonTextColor,
+      },
+      text: {
+        font: 'Link Sans',
+        pageColor: this.pageTextColor,
+        titleColor: this.titleColor,
+      },
+    };
+
+    this.themeService.updateTheme(payload).subscribe({
+      next: (res) => {
+        console.log('Theme updated:', res.data);
+        alert('Theme updated successfully!');
+        this.cd.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to update theme', err);
+        alert('Failed to update theme');
+      },
     });
   }
 }

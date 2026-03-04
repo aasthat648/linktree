@@ -8,10 +8,14 @@ import { Observable, retry } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class ProfileService {
+export class ThemeService {
   private readonly API_URL: string = `${environment.apicall}/theme`;
 
   constructor(private http: HttpClient) {}
+
+  getTheme(): Observable<ApiResponse<ThemeResponse>> {
+    return this.http.get<ApiResponse<ThemeResponse>>(`${this.API_URL}/`);
+  }
 
   updateTheme(payload: UpdateThemeBody): Observable<ApiResponse<ThemeResponse>> {
     return this.http.put<ApiResponse<ThemeResponse>>(`${this.API_URL}/`, payload);
