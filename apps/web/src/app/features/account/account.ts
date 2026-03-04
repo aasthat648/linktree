@@ -12,8 +12,8 @@ import { filter, map, Observable } from 'rxjs';
   templateUrl: './account.html',
 })
 export class Account {
-  userName$!: Observable<string>;
-  Name$!: Observable<string>;
+  // userName$!: Observable<string>;
+  // Name$!: Observable<string>;
   avatarUrl: string = '';
   name: string = '';
   username: string = '';
@@ -25,40 +25,82 @@ export class Account {
     private authStore: AuthStore,
     private profileService: ProfileService,
   ) {
-    this.userName$ = this.authStore.user$.pipe(
-      filter((user): user is any => !!user),
-      map((user) => user.username),
-    );
-    this.Name$ = this.authStore.user$.pipe(
-      filter((user): user is any => !!user),
-      map((user) => user.name),
-    );
+    // this.userName$ = this.authStore.user$.pipe(
+    //   filter((user): user is any => !!user),
+    //   map((user) => user.username),
+    // );
+    // this.Name$ = this.authStore.user$.pipe(
+    //   filter((user): user is any => !!user),
+    //   map((user) => user.name),
+    // );
+  }
+
+  ngOnInit(): void {
+    this.profileService.getProfile().subscribe((res) => {
+      console.log("res", res);
+      if (res && res.data) {
+        this.name = res.data.display_name ?? 'checkin';
+        this.username = res.data.username ?? '';
+        this.bio = res.data.bio ?? 'This is your default bio';
+        this.avatarUrl = res.data.avatar_url ?? '';
+      }
+    });
   }
 
   onFileSelected(event: any) {
     const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
-
-      const reader = new FileReader();
-      reader.onload = (e) => (this.avatarUrl = reader.result as string);
-      reader.readAsDataURL(file);
-
-      this.uploadFile(file);
-    }
+  
+    if (!file) return;
+  
+    this.selectedFile = file;
+  
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.avatarUrl = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  
+    this.uploadFile(file);
   }
-
-  async uploadFile(file: File) {
+  
+  uploadFile(file: File) {
     const formData = new FormData();
     formData.append('file', file);
-
-    try {
-      const res: any = await this.profileService.uploadAvatar(formData).toPromise();
-      this.avatarUrl = res.data.url;
-    } catch (err) {
-      console.error('Failed to upload avatar:', err);
-    }
+  
+    this.profileService.uploadAvatar(formData).subscribe({
+      next: (res: any) => {
+        this.avatarUrl = res.path; // returned from backend
+      },
+      error: (err) => {
+        console.error('Upload failed', err);
+      }
+    });
   }
+
+  // onFileSelected(event: any) {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     this.selectedFile = file;
+
+  //     const reader = new FileReader();
+  //     reader.onload = (e) => (this.avatarUrl = reader.result as string);
+  //     reader.readAsDataURL(file);
+
+  //     this.uploadFile(file);
+  //   }
+  // }
+
+  // async uploadFile(file: File) {
+  //   const formData = new FormData();
+  //   formData.append('file', file);
+
+  //   try {
+  //     const res: any = await this.profileService.uploadAvatar(formData).toPromise();
+  //     this.avatarUrl = res.data.url;
+  //   } catch (err) {
+  //     console.error('Failed to upload avatar:', err);
+  //   }
+  // }
 
   saveProfile() {
     const payload: UpdateProfileBody = {
@@ -67,6 +109,8 @@ export class Account {
       bio: this.bio ?? '',
       avatar_url: this.avatarUrl ?? '', // Send the relative URL
     };
+
+    console.log("payload", payload);
 
     this.profileService.UpdateProfile(payload).subscribe({
       next: (res) => {
