@@ -60,11 +60,6 @@ export const routes: Routes = [
   },
 
   {
-    path: '**',
-    loadComponent: () => import('./features/home/home').then((m) => m.Home),
-  },
-
-  {
     path: 'admindashboard',
     loadComponent: () =>
       import('./layout/admindashboard/admindashboard').then((m) => m.admindashboardLayout),
@@ -74,5 +69,10 @@ export const routes: Routes = [
       { path: 'user', component: User, data: { name: 'Users' } },
       { path: 'link', component: LinkComponent, data: { name: 'links' } },
     ],
+  },
+
+  {
+    path: '**',
+    loadComponent: () => import('./features/home/home').then((m) => m.Home),
   },
 ];
