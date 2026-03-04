@@ -4,7 +4,7 @@ import { Links } from "@/models/links"
 
 export const createLinkService = async (userId: string, data: CreateLinkBody): Promise<Result<LinkResponse>> => {
   try {
-    const isLinkExists = await Links.findOne({ user_id: userId, title: data.title }).lean();
+    const isLinkExists = await Links.findOne({ user_id: userId, platform: data.platform, title: data.title }).lean();
 
     if (isLinkExists) {
       return fail('ALREADY_EXISTS', 'Link already exists');
@@ -59,6 +59,13 @@ export const getLinksService = async (userId: string): Promise<Result<LinkRespon
 
 export const updateLinkService = async (userId: string, linkId: string, data: UpdateLinkBody): Promise<Result<LinkResponse>> => {
   try {
+
+    const isLinkExists = await Links.findOne({ user_id: userId, platform: data.platform, title: data.title, _id: { $ne: linkId } }).lean();
+
+    if (isLinkExists) {
+      return fail('ALREADY_EXISTS', 'Link already exists');
+    }
+
     const link = await Links.findOneAndUpdate({ user_id: userId, _id: linkId }, data, { new: true }).lean();
 
     if (!link) {
