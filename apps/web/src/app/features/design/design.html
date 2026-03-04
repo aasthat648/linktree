@@ -95,11 +95,11 @@
         <p class="text-sm mb-2">Profile image</p>
 
         <div class="flex items-center gap-4">
-          <div class="w-16 h-16 bg-gray-300 rounded-full">
+          <div (click)="fileInput.click()" class="w-16 h-16 bg-gray-300 rounded-full">
             <img
-              [src]="imagePreview ? imagePreview : 'images/user.png'"
+              [src]="avatarUrl ? avatarUrl : 'images/user.png'"
               alt="Profile"
-              class="rounded-full border border-gray-300 object-cover"
+              class="rounded-full object-cover w-full h-full"
             />
           </div>
 
@@ -110,15 +110,6 @@
             accept="image/*"
             (change)="onFileSelected($event)"
           />
-
-          <button
-            type="button"
-            (click)="fileInput.click()"
-            class="flex flex-row gap-1 items-center px-4 py-2 bg-black text-white rounded-full text-sm hover:bg-gray-800 transition"
-          >
-            <lucide-icon name="plus" class="h-4 w-4 text-gray-300"></lucide-icon>
-            <span>Add</span>
-          </button>
         </div>
       </div>
 
@@ -127,10 +118,18 @@
         <p class="text-sm mb-2">Title</p>
         <input
           type="text"
-          [value]="Name$ | async"
+          [(ngModel)]="name"
           class="w-full p-2 h-10 text-sm rounded-xl border bg-white border-gray-300 focus:outline-none focus:ring-1 focus:ring-black"
         />
       </div>
+
+      <!-- button -->
+      <button
+        (click)="saveProfile()"
+        class="w-full h-10 bg-blue-600 text-white rounded-3xl text-sm hover:opacity-90 transition mb-4"
+      >
+        Save changes
+      </button>
     </ng-container>
 
     <!-- wallpaper page -->
@@ -276,6 +275,14 @@
           [ngStyle]="{ 'background-image': 'url(' + imagePreview + ')' }"
         ></div>
       </div>
+
+      <!-- button -->
+      <button
+        (click)="saveTheme()"
+        class="w-full h-10 bg-blue-600 text-white rounded-3xl text-sm hover:opacity-90 transition mt-4"
+      >
+        Save changes
+      </button>
     </ng-container>
 
     <!-- buttons page -->
@@ -406,6 +413,12 @@
           />
         </div>
       </div>
+      <button
+        (click)="saveTheme()"
+        class="w-full h-10 bg-blue-600 text-white rounded-3xl text-sm hover:opacity-90 transition mb-4"
+      >
+        Save changes
+      </button>
     </ng-container>
 
     <!-- text page -->
@@ -470,6 +483,12 @@
           />
         </div>
       </div>
+      <button
+        (click)="saveTheme()"
+        class="w-full h-10 bg-blue-600 text-white rounded-3xl text-sm hover:opacity-90 transition mt-3"
+      >
+        Save changes
+      </button>
     </ng-container>
 
     <!-- color page -->
@@ -571,6 +590,12 @@
           </div>
         </div>
       </div>
+      <button
+        (click)="saveTheme()"
+        class="w-full h-10 bg-blue-600 text-white rounded-3xl text-sm hover:opacity-90 transition mt-4"
+      >
+        Save changes
+      </button>
     </ng-container>
   </div>
 </div>

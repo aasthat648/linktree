@@ -2,17 +2,17 @@ import { ProfileService } from '@/app/core/services/profile-service';
 import { AuthStore } from '@/app/store/auth';
 import { environment } from '@/environment/environment';
 // import { AsyncPipe } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UpdateProfileBody } from '@linktree/validation';
 // import { filter, map, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-account',
-  imports: [ FormsModule],
+  imports: [FormsModule],
   templateUrl: './account.html',
 })
-export class Account {
+export class Account implements OnInit {
   // userName$!: Observable<string>;
   // Name$!: Observable<string>;
   avatarUrl: string = '';
@@ -25,65 +25,58 @@ export class Account {
   constructor(
     private authStore: AuthStore,
     private profileService: ProfileService,
-  ) {
-    // this.userName$ = this.authStore.user$.pipe(
-    //   filter((user): user is any => !!user),
-    //   map((user) => user.username),
-    // );
-    // this.Name$ = this.authStore.user$.pipe(
-    //   filter((user): user is any => !!user),
-    //   map((user) => user.name),
-    // );
-  }
+    private cd: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     this.profileService.getProfile().subscribe((res) => {
-      console.log("res", res);
+      console.log('res', res);
       if (res && res.data) {
         this.name = res.data.display_name ?? 'checkin';
         this.username = res.data.username ?? '';
         this.bio = res.data.bio ?? 'This is your default bio';
-        if(res.data.avatar_url){
+        if (res.data.avatar_url) {
           this.avatarUrl = `${environment.backend}${res?.data?.avatar_url}`;
-        }else{
+        } else {
           this.avatarUrl = res.data.avatar_url ?? '';
         }
 
-
-        console.log("Hello: ", this.avatarUrl)
+        console.log('NG On Init: ', this.avatarUrl);
+        this.cd.detectChanges();
       }
     });
   }
 
   onFileSelected(event: any) {
     const file = event.target.files[0];
-  
+
     if (!file) return;
-  
+
     this.selectedFile = file;
-  
+
     const reader = new FileReader();
     reader.onload = () => {
       this.avatarUrl = reader.result as string;
+      this.cd.detectChanges();
     };
     reader.readAsDataURL(file);
-  
+
     this.uploadFile(file);
   }
-  
+
   uploadFile(file: File) {
     const formData = new FormData();
     formData.append('file', file);
-  
+
     this.profileService.uploadAvatar(formData).subscribe({
       next: (res: any) => {
-        this.avatarUrl = `${environment.backend}${res?.data?.path}` // returned from backend
-        console.log("Image: ", {image: this.avatarUrl})
-
+        this.avatarUrl = `${environment.backend}${res?.data?.path}`; // returned from backend
+        console.log('Image: ', { image: this.avatarUrl });
+        this.cd.detectChanges();
       },
       error: (err) => {
         console.error('Upload failed', err);
-      }
+      },
     });
   }
 
@@ -117,15 +110,17 @@ export class Account {
       display_name: this.name,
       username: this.username,
       bio: this.bio ?? '',
-      avatar_url: this.avatarUrl ?? '', // Send the relative URL
+      avatar_url: this.avatarUrl.includes(environment.backend)
+        ? this.avatarUrl.replace(environment.backend, '')
+        : (this.avatarUrl ?? ''), // Send the relative URL
     };
 
-    console.log("payload", payload);
+    console.log('payload', payload);
 
     this.profileService.UpdateProfile(payload).subscribe({
       next: (res) => {
         console.log('Profile updated:', res.data);
-        // Optionally update AuthStore here
+        this.cd.detectChanges();
       },
       error: (err) => console.error('Update failed:', err),
     });

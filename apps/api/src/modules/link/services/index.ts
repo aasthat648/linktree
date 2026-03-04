@@ -4,18 +4,41 @@ import { Links } from "@/models/links"
 
 export const createLinkService = async (userId: string, data: CreateLinkBody): Promise<Result<LinkResponse>> => {
   try {
-    const isLinkExists = await Links.findOne({ user_id: userId, title: data.title }).lean();
+    const exists = await Links.findOne({
+      user_id: userId,
+      platform: data.platform,
+      $or: [{ title: data.title }, { link: data.link }],
+    }).lean();
 
-    if (isLinkExists) {
-      return fail('ALREADY_EXISTS', 'Link already exists');
+    if (exists) {
+      if (exists.title === data.title) {
+        return fail('ALREADY_EXISTS', 'You already have a link with this title on the same platform');
+      }
+      if (exists.link === data.link) {
+        return fail('ALREADY_EXISTS', 'You already have this URL on the same platform');
+      }
     }
 
-    const link = await Links.create({
-      user_id: userId,
-      title: data.title,
-      link: data.link,
-      platform: data.platform,
-    });
+
+    let link;
+
+    try {
+
+      link = await Links.create({
+        user_id: userId,
+        title: data.title,
+        link: data.link,
+        platform: data.platform,
+      });
+    } catch (err: any) {
+      if (err.code === 11000) {
+        return fail('ALREADY_EXISTS', 'Link already exists for this platform');
+      }
+    }
+
+    if (!link) {
+      return fail('NOT_FOUND', 'Link not found');
+    }
 
     const response: LinkResponse = {
       _id: link._id.toString(),
@@ -59,7 +82,37 @@ export const getLinksService = async (userId: string): Promise<Result<LinkRespon
 
 export const updateLinkService = async (userId: string, linkId: string, data: UpdateLinkBody): Promise<Result<LinkResponse>> => {
   try {
-    const link = await Links.findOneAndUpdate({ user_id: userId, _id: linkId }, data, { new: true }).lean();
+
+    const exists = await Links.findOne({
+      user_id: userId,
+      platform: data.platform,
+      $or: [{ title: data.title }, { link: data.link }],
+      _id: { $ne: linkId },
+    }).lean();
+
+    if (exists) {
+      if (exists.title === data.title) {
+        return fail('ALREADY_EXISTS', 'You already have a link with this title on the same platform');
+      }
+      if (exists.link === data.link) {
+        return fail('ALREADY_EXISTS', 'You already have this URL on the same platform');
+      }
+    }
+
+
+    let link;
+
+    try {
+
+      link = await Links.findOneAndUpdate({ user_id: userId, _id: linkId }, data, { new: true }).lean();
+
+    } catch (err: any) {
+      if (err.code === 11000) {
+        return fail('ALREADY_EXISTS', 'Link already exists for this platform');
+      }
+    }
+
+
 
     if (!link) {
       return fail('NOT_FOUND', 'Link not found');

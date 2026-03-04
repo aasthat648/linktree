@@ -35,6 +35,7 @@ export const createLinkBodySchema = z.object({
 export const updateLinkBodySchema = z.object({
   title: z.string().trim().min(1).max(120).optional(),
   link: z.string().url("Invalid URL format").optional(),
+  platform: z.enum(PLATFORM_ENUM).optional(),
 });
 
 export const linkResponseSchema = z.object({

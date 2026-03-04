@@ -5,9 +5,11 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CreateLinkBody, LinkResponse } from '@linktree/validation';
-import { ToastrService } from 'ngx-toastr';
+import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { filter, map, Observable } from 'rxjs';
 import { ChangeDetectorRef, OnInit } from '@angular/core';
+import { ProfileService } from '@/app/core/services/profile-service';
+import { environment } from '@/environment/environment';
 
 @Component({
   selector: 'app-link',
@@ -20,18 +22,16 @@ export class Link implements OnInit {
   selectedItems: any[] = [];
   isCardOpen = false;
   links: LinkResponse[] = [];
+  avatarUrl: string = '';
+  name: string = '';
 
   constructor(
     private authStore: AuthStore,
     private linkService: LinkService,
     private toastr: ToastrService,
     private cd: ChangeDetectorRef,
-  ) {
-    this.UserName$ = this.authStore.user$.pipe(
-      filter((user): user is any => !!user),
-      map((user) => user.username),
-    );
-  }
+    private profileService: ProfileService,
+  ) {}
 
   socialItems = [
     { platform: 'instagram', icon: 'images/instagram.png' },
@@ -55,6 +55,25 @@ export class Link implements OnInit {
     { platform: 'applemusic', icon: 'images/applemusic.png' },
   ];
 
+  ngOnInit(): void {
+    this.loadLinks();
+    this.profileService.getProfile().subscribe((res) => {
+      console.log('res', res);
+      if (res && res.data) {
+        this.name = res.data.display_name ?? 'checkin';
+
+        if (res.data.avatar_url) {
+          this.avatarUrl = `${environment.backend}${res?.data?.avatar_url}`;
+        } else {
+          this.avatarUrl = res.data.avatar_url ?? '';
+        }
+
+        console.log('Hello: ', this.avatarUrl);
+        this.cd.detectChanges();
+      }
+    });
+  }
+
   selectSocial(item: any) {
     this.selectedItems.push({
       platform: item.platform,
@@ -72,7 +91,7 @@ export class Link implements OnInit {
     const item = this.selectedItems[index];
 
     if (!item.title || !item.link) {
-      this.toastr.error('Please fill both Title and Link.');
+      this.toastr.info('Please fill both Title and Link.');
       return;
     }
 
@@ -88,8 +107,8 @@ export class Link implements OnInit {
         this.selectedItems.splice(index, 1);
         this.loadLinks();
       },
-      error: () => {
-        this.toastr.error('Failed to save link.');
+      error: (err) => {
+        this.toastr.error('already exist');
       },
     });
   }
@@ -104,16 +123,19 @@ export class Link implements OnInit {
           this.cd.detectChanges();
         }
       },
+      error: (err) => {
+        this.toastr.error(err);
+      },
     });
-  }
-
-  ngOnInit(): void {
-    this.loadLinks();
   }
 
   // update link
 
   updateLink(link: LinkResponse) {
+    if (!link.title || !link.link) {
+      this.toastr.info('Please fill both Title and Link.');
+      return;
+    }
     const payload = {
       title: link.title,
       link: link.link,
@@ -128,8 +150,8 @@ export class Link implements OnInit {
         this.toastr.success('Link updated successfully');
         this.links = this.links.map((l) => (l._id === res.data!._id ? res.data! : l));
       },
-      error: () => {
-        this.toastr.error('Update failed');
+      error: (err) => {
+        this.toastr.error('already exist');
       },
     });
   }
@@ -140,11 +162,12 @@ export class Link implements OnInit {
     this.linkService.deleteLink(link._id).subscribe({
       next: () => {
         this.links = this.links.filter((l) => l._id !== link._id);
+        this.toastr.success('link deleted successfully');
         this.cd.detectChanges();
         console.log('After delete:', this.links);
       },
       error: (err) => {
-        console.error(err);
+        this.toastr.error(err);
       },
     });
   }

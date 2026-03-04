@@ -1,8 +1,9 @@
 import { ProfileService } from '@/app/core/services/profile-service';
 import { IconsModule } from '@/app/shared/components/icons';
 import { AuthStore } from '@/app/store/auth';
+import { environment } from '@/environment/environment';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import {
   ActivatedRoute,
   NavigationEnd,
@@ -23,21 +24,17 @@ import { filter, map, Observable } from 'rxjs';
 export class dashboardLayout {
   pageName = '';
   showRightSidebar = false;
-  userName$!: Observable<string>;
-  showSave$!: Observable<boolean>;
+  avatarUrl: string = '';
+  name: string = '';
+  username: string = '';
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private authStore: AuthStore,
     private profileService: ProfileService,
+    private cd: ChangeDetectorRef,
   ) {
-    this.userName$ = this.authStore.user$.pipe(
-      filter((user): user is any => !!user),
-      map((user) => user.username),
-    );
-
-    console.log('username', this.userName$);
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
       let currentRoute = this.route;
 
@@ -50,9 +47,22 @@ export class dashboardLayout {
     });
   }
 
-  ngOnInit() {
-    // this.profileService.getProfile();
-    // call here 
+  ngOnInit(): void {
+    this.profileService.getProfile().subscribe((res) => {
+      console.log('res', res);
+      if (res && res.data) {
+        this.name = res.data.display_name ?? 'checkin';
+        this.username = res.data.username ?? '';
+        if (res.data.avatar_url) {
+          this.avatarUrl = `${environment.backend}${res?.data?.avatar_url}`;
+        } else {
+          this.avatarUrl = res.data.avatar_url ?? '';
+        }
+
+        console.log('Hello: ', this.avatarUrl);
+      }
+    });
+    this.cd.detectChanges();
   }
 
   logout() {

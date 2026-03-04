@@ -64,7 +64,16 @@ const LinksSchema = new Schema<LinksDocument>(
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
 );
 
-// Prevent duplicate links per user + platform
-LinksSchema.index({ user_id: 1, platform: 1, link: 1 }, { unique: true });
+// 1. No duplicate titles per user+platform
+LinksSchema.index(
+  { user_id: 1, platform: 1, title: 1 },
+  { unique: true }
+);
+
+// 2. No duplicate links per user+platform
+LinksSchema.index(
+  { user_id: 1, platform: 1, link: 1 },
+  { unique: true }
+);
 
 export const Links = model<LinksDocument>("Link", LinksSchema);
