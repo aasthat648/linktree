@@ -7,14 +7,12 @@ import {
   FormControl,
   Validators,
 } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ValidationToastService } from '@/app/core/services/validation-toast';
 import { ErrorHandlerService } from '@/app/core/services/error-handler';
-import { environment } from '@/environment/environment';
-import type { AdminLogin as AdminLoginBody, AdminResponse } from '@linktree/validation';
-import type { ApiResponse } from '@linktree/shared-types';
+import { AdminAuthService } from '@/app/core/services/admin-auth.service';
+import type { AdminLogin as AdminLoginBody } from '@linktree/validation';
 
 @Component({
   selector: 'app-admin-login',
@@ -24,10 +22,9 @@ import type { ApiResponse } from '@linktree/shared-types';
 })
 export class AdminLogin {
   submitted: boolean = false;
-  private readonly ADMIN_API_URL = `${environment.apicall}/admin/auth`;
 
   constructor(
-    private http: HttpClient,
+    private adminAuthService: AdminAuthService,
     private toastr: ToastrService,
     private validator: ValidationToastService,
     private errorHandleService: ErrorHandlerService,
@@ -45,17 +42,15 @@ export class AdminLogin {
 
     const data = this.loginForm.getRawValue() as AdminLoginBody;
 
-    this.http
-      .post<ApiResponse<AdminResponse>>(`${this.ADMIN_API_URL}/login`, data)
-      .subscribe({
-        next: () => {
-          this.toastr.success('Admin login successful');
-          this.router.navigate(['admindashboard']);
-        },
-        error: (err) => {
-          const errorMessage = this.errorHandleService.handleStatus(err.status);
-          this.toastr.error(errorMessage);
-        },
-      });
+    this.adminAuthService.login(data).subscribe({
+      next: () => {
+        this.toastr.success('Admin login successful');
+        this.router.navigate(['admindashboard']);
+      },
+      error: (err) => {
+        const errorMessage = this.errorHandleService.handleStatus(err.status);
+        this.toastr.error(errorMessage);
+      },
+    });
   }
 }

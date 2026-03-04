@@ -5,6 +5,7 @@ import { Design } from './features/design/design';
 import { Account } from './features/account/account';
 import { Insight } from './features/insight/insight';
 import { AuthGuard } from './core/guards/auth';
+import { AdminAuthGuard } from './core/guards/admin-auth.guard';
 import { Dashboard } from './features/dashboard/dashboard/dashboard';
 import { User } from './features/dashboard/user/user';
 import { LinkComponent } from './features/dashboard/link/link';
@@ -67,6 +68,7 @@ export const routes: Routes = [
     path: 'admindashboard',
     loadComponent: () =>
       import('./layout/admindashboard/admindashboard').then((m) => m.admindashboardLayout),
+    canActivate: [AdminAuthGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: Dashboard, data: { name: 'Dashboard' } },
