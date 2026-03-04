@@ -47,11 +47,6 @@ export const routes: Routes = [
         data: { name: 'Design', rightSidebar: true },
       },
       {
-        path: 'insight',
-        component: Insight,
-        data: { name: 'Insights', rightSidebar: false },
-      },
-      {
         path: 'account',
         component: Account,
         data: { name: 'Account', rightSidebar: false },

@@ -1,5 +1,6 @@
 import { HomeService } from '@/app/core/services/home-service';
 import { ProfileService } from '@/app/core/services/profile-service';
+import { IconsModule } from '@/app/shared/components/icons';
 import { AuthStore } from '@/app/store/auth';
 import { environment } from '@/environment/environment';
 import { CommonModule } from '@angular/common';
@@ -9,7 +10,7 @@ import { filter, map, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule],
+  imports: [CommonModule, IconsModule],
   templateUrl: './home.html',
 })
 export class Home {
@@ -20,6 +21,27 @@ export class Home {
   links: any[] = [];
 
   theme: any;
+  socialItems = [
+    { platform: 'instagram', icon: 'images/instagram.png' },
+    { platform: 'facebook', icon: 'images/facebook.png' },
+    { platform: 'youtube', icon: 'images/youtube.png' },
+    { platform: 'spotify', icon: 'images/spotify.png' },
+    { platform: 'slack', icon: 'images/slack.png' },
+    { platform: 'x', icon: 'images/x.png' },
+    { platform: 'snapchat', icon: 'images/snapchat.png' },
+    { platform: 'github', icon: 'images/github.png' },
+    { platform: 'linkedin', icon: 'images/linkedin.png' },
+    { platform: 'discord', icon: 'images/discord.png' },
+    { platform: 'telegram', icon: 'images/telegram.png' },
+    { platform: 'substack', icon: 'images/substack.png' },
+    { platform: 'pinterest', icon: 'images/pinterest.png' },
+    { platform: 'twitch', icon: 'images/twitch.png' },
+    { platform: 'whatsapp', icon: 'images/whatsapp.png' },
+    { platform: 'threads', icon: 'images/threads.png' },
+    { platform: 'reddit', icon: 'images/reddit.png' },
+    { platform: 'mail', icon: 'images/mail.png' },
+    { platform: 'applemusic', icon: 'images/applemusic.png' },
+  ];
 
   constructor(
     private authStore: AuthStore,
@@ -28,6 +50,8 @@ export class Home {
     private homeService: HomeService,
     private router: Router,
   ) {}
+
+  // After fetching links, map each link to its icon
 
   ngOnInit(): void {
     const path = this.router.url;
@@ -49,6 +73,15 @@ export class Home {
         // LINKS
 
         this.links = res.data.links;
+        this.links = res.data.links.map((link) => {
+          const iconItem = this.socialItems.find(
+            (item) => item.platform === link.platform.toLowerCase(),
+          );
+          return {
+            ...link,
+            icon: iconItem ? iconItem.icon : '', // add icon path
+          };
+        });
 
         // THEME
 
@@ -61,6 +94,7 @@ export class Home {
           links: this.links,
           theme: this.theme,
         });
+
         this.cd.detectChanges();
       }
     });

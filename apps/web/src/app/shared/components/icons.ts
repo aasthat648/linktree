@@ -31,7 +31,9 @@ import {
   Blocks,
   LogOut,
   Upload,
+  GalleryVerticalEnd,
   Save,
+  Settings,
 } from 'lucide-angular';
 
 @NgModule({
@@ -64,6 +66,8 @@ import {
       Eye,
       ChevronDown,
       MousePointerClick,
+      GalleryVerticalEnd,
+      Settings,
       Percent,
       Upload,
       Save,
