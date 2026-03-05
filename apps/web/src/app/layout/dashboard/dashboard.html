@@ -4,10 +4,10 @@
     <!-- Top Section -->
     <div class="flex flex-col items-center mt-4 space-y-6">
       <!-- Profile / Logo -->
-      <div
-        class="w-10 h-10 rounded-full overflow-hidden bg-gray-400 flex items-center justify-center"
-      >
-        <img src="images/greenlogo.png" alt="Profile" class="object-cover w-full h-full" />
+      <div class="flex items-center justify-center">
+        <button class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+          <img src="/images/blacklogo.png" class="w-4 h-4" alt="Logo" />
+        </button>
       </div>
 
       <!-- Navigation Links -->
@@ -74,9 +74,12 @@
   >
     <div class="h-[10%] w-full flex items-center justify-center">
       <div
-        class="bg-white rounded-2xl w-80 h-[50%] text-sm flex items-center justify-center shadow-sm"
+        class="bg-white rounded-2xl w-80 h-[50%] text-sm flex items-center justify-center shadow-sm gap-3"
       >
         <span class="text-gray-700 font-semibold"> linktree/{{ username }} </span>
+        <button (click)="openLinkInTab(username)" class="text-gray-800 hover:text-black transition">
+          <lucide-icon name="upload" size="15"></lucide-icon>
+        </button>
       </div>
     </div>
     <div class="flex justify-center h-[90%] w-full">
