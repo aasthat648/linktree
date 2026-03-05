@@ -8,9 +8,10 @@ import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UpdateProfileBody, UpdateThemeBody } from '@linktree/validation';
 import { ToastrService } from 'ngx-toastr';
-import { filter, forkJoin, map, Observable } from 'rxjs';
+import { forkJoin } from 'rxjs';
 
 type PageType = 'main' | 'header' | 'wallpaper' | 'buttons' | 'text' | 'colors';
+
 @Component({
   selector: 'app-design',
   imports: [CommonModule, IconsModule, FormsModule],
@@ -19,17 +20,20 @@ type PageType = 'main' | 'header' | 'wallpaper' | 'buttons' | 'text' | 'colors';
 export class Design {
   selectedStyle: string = 'fill';
   backgroundColor: string = '#ECEEF1';
-  currentPage: PageType = 'main';
   gradientColor1: string = '#8B5CF6';
   gradientColor2: string = '#60A5FA';
+  imagePreview: string | ArrayBuffer | null = null;
+
   buttonStyle: string = 'solid';
-  buttonRadius: string = 'rounder';
-  buttonShadow: string = 'none';
+  buttonRadius: string = 'rounded';
   buttonColor: string = '#FFFFFF';
   buttonTextColor: string = '#000000';
-  imagePreview: string | ArrayBuffer | null = null;
+
   pageTextColor = '#000000';
   titleColor = '#000000';
+
+  currentPage: PageType = 'main';
+
   avatarUrl: string = '';
   name: string = '';
   selectedFile: File | null = null;
@@ -38,9 +42,9 @@ export class Design {
   constructor(
     private authStore: AuthStore,
     private profileService: ProfileService,
-    private cd: ChangeDetectorRef,
     private themeService: ThemeService,
     private toastr: ToastrService,
+    private cd: ChangeDetectorRef,
   ) {}
 
   styles = [
@@ -64,58 +68,109 @@ export class Design {
     this.currentPage = 'main';
   }
 
+  fonts = [
+    { name: 'Inter', value: 'font-inter' },
+    { name: 'Sans', value: 'font-sans' },
+    { name: 'Poppins', value: 'font-poppins' },
+    { name: 'Roboto', value: 'font-roboto' },
+    { name: 'Montserrat', value: 'font-montserrat' },
+    { name: 'Lato', value: 'font-lato' },
+    { name: 'Link Sans', value: 'font-link-sans' },
+    { name: 'Serif', value: 'font-serif' },
+    { name: 'Mono', value: 'font-mono' },
+  ];
+
+  selectedFont: string = 'font-sans';
+
+  fontMap: Record<string, string> = this.fonts.reduce(
+    (acc, f) => ({ ...acc, [f.name]: f.value }),
+    {},
+  );
+
   ngOnInit(): void {
-    // Load profile + theme together
     forkJoin({
       profile: this.profileService.getProfile(),
       theme: this.themeService.getTheme(),
     }).subscribe({
       next: ({ profile, theme }) => {
-        // Profile
+        // profile
         if (profile?.data) {
           this.name = profile.data.display_name ?? 'checkin';
+
           this.avatarUrl = profile.data.avatar_url
             ? `${environment.backend}${profile.data.avatar_url}`
-            : (profile.data.avatar_url ?? '');
+            : '';
         }
 
-        // Theme
+        // theme
         if (theme?.data) {
           this.theme = theme.data;
 
-          // Example: apply theme to your variables
-          this.backgroundColor = this.theme.background?.value ?? this.backgroundColor;
-          this.buttonColor = this.theme.button?.color ?? this.buttonColor;
-          this.buttonTextColor = this.theme.button?.textColor ?? this.buttonTextColor;
-          this.buttonStyle = this.theme.button?.style ?? this.buttonStyle;
-          this.buttonRadius = this.theme.button?.radius ?? this.buttonRadius;
-          this.pageTextColor = this.theme.text?.pageColor ?? this.pageTextColor;
-          this.titleColor = this.theme.text?.titleColor ?? this.titleColor;
-          this.selectedStyle = this.theme.wallpaper?.style ?? this.selectedStyle;
-          this.gradientColor1 = this.theme.wallpaper?.gradient1 ?? this.gradientColor1;
-          this.gradientColor2 = this.theme.wallpaper?.gradient2 ?? this.gradientColor2;
-          this.imagePreview = this.theme.wallpaper?.image ?? null;
+          const bg = this.theme.background;
+          const button = this.theme.button;
+          const text = this.theme.text;
+
+          // background
+          if (bg?.type === 'solid') {
+            this.selectedStyle = 'fill';
+            this.backgroundColor = bg.value ?? this.backgroundColor;
+          } else if (bg?.type === 'gradient') {
+            this.selectedStyle = 'gradient';
+
+            if (bg.value) {
+              const colors = bg.value.match(/#[a-fA-F0-9]{6}/g);
+
+              if (colors?.length >= 2) {
+                this.gradientColor1 = colors[0];
+                this.gradientColor2 = colors[1];
+              }
+            }
+          } else if (bg?.type === 'image') {
+            this.selectedStyle = 'image';
+
+            this.imagePreview = bg.value ? `${environment.backend}${bg.value}` : null;
+          }
+
+          // button
+          if (button) {
+            this.buttonStyle = button.variant ?? this.buttonStyle;
+            this.buttonRadius = button.radius ?? this.buttonRadius;
+            this.buttonColor = button.color ?? this.buttonColor;
+            this.buttonTextColor = button.textColor ?? this.buttonTextColor;
+          }
+
+          // text
+          if (text) {
+            this.pageTextColor = text.pageColor ?? this.pageTextColor;
+            this.titleColor = text.titleColor ?? this.titleColor;
+            this.selectedFont =
+              text?.font && this.fontMap[text.font] ? this.fontMap[text.font] : 'font-sans';
+          }
         }
-        console.log('api called');
 
         this.cd.detectChanges();
       },
-      error: (err) => console.error('Failed to load profile or theme', err),
+
+      error: (err) => {
+        console.error('Failed to load profile/theme', err);
+      },
     });
   }
 
+  // avatar
   onFileSelected(event: any) {
     const file = event.target.files[0];
-
     if (!file) return;
 
     this.selectedFile = file;
 
     const reader = new FileReader();
+
     reader.onload = () => {
       this.avatarUrl = reader.result as string;
       this.cd.detectChanges();
     };
+
     reader.readAsDataURL(file);
 
     this.uploadFile(file);
@@ -127,15 +182,18 @@ export class Design {
 
     this.profileService.uploadAvatar(formData).subscribe({
       next: (res: any) => {
-        this.avatarUrl = `${environment.backend}${res?.data?.path}`; // returned from backend
-        console.log('Image: ', { image: this.avatarUrl });
+        this.avatarUrl = `${environment.backend}${res?.data?.path}`;
+
         this.cd.detectChanges();
       },
+
       error: (err) => {
         console.error('Upload failed', err);
       },
     });
   }
+
+  /* ---------------- SAVE PROFILE ---------------- */
 
   saveProfile() {
     const payload: UpdateProfileBody = {
@@ -143,22 +201,25 @@ export class Design {
 
       avatar_url: this.avatarUrl.includes(environment.backend)
         ? this.avatarUrl.replace(environment.backend, '')
-        : (this.avatarUrl ?? ''), // Send the relative URL
+        : (this.avatarUrl ?? ''),
     };
 
-    console.log('payload', payload);
-
     this.profileService.UpdateProfile(payload).subscribe({
-      next: (res) => {
-        console.log('Profile updated:', res.data);
-        this.cd.detectChanges();
+      next: () => {
+        this.toastr.success('Profile updated');
       },
-      error: (err) => console.error('Update failed:', err),
+
+      error: (err) => {
+        console.error('Profile update failed', err);
+      },
     });
   }
 
+  /* ---------------- SAVE THEME ---------------- */
+
   saveTheme() {
     type BackgroundType = 'solid' | 'gradient' | 'image';
+
     const bgType: BackgroundType =
       this.selectedStyle === 'fill' ? 'solid' : (this.selectedStyle as BackgroundType);
 
@@ -174,12 +235,14 @@ export class Design {
         type: bgType,
         value: bgValue,
       },
+
       button: {
         variant: this.buttonStyle as 'solid' | 'outline',
         radius: this.buttonRadius as 'square' | 'rounded',
         color: this.buttonColor,
         textColor: this.buttonTextColor,
       },
+
       text: {
         font: 'Link Sans',
         pageColor: this.pageTextColor,
@@ -188,14 +251,13 @@ export class Design {
     };
 
     this.themeService.updateTheme(payload).subscribe({
-      next: (res) => {
-        console.log('Theme updated:', res.data);
+      next: () => {
         this.toastr.success('Theme updated successfully!');
-        this.cd.detectChanges();
       },
+
       error: (err) => {
-        console.error('Failed to update theme', err);
-        this.toastr.error(err, 'theme update failed');
+        console.error('Theme update failed', err);
+        this.toastr.error('Theme update failed');
       },
     });
   }
