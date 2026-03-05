@@ -15,13 +15,96 @@
         {{ bio }}
       </div>
 
-      <div class="flex flex-row gap-2 h-6 w-full text-gray-700">
-        <lucide-icon name="instagram" class="w-5 h-5"></lucide-icon>
-        <lucide-icon name="facebook" class="w-5 h-5"></lucide-icon>
-        <lucide-icon name="twitter" class="w-5 h-5"></lucide-icon>
-        <lucide-icon name="linkedin" class="w-5 h-5"></lucide-icon>
-        <lucide-icon name="github" class="w-5 h-5"></lucide-icon>
-        <lucide-icon name="slack" class="w-5 h-5"></lucide-icon>
+      <div class="flex flex-row gap-3 h-6 w-full text-gray-700">
+        <!-- Instagram -->
+        <div class="relative group">
+          <lucide-icon
+            name="instagram"
+            class="w-5 h-5 cursor-pointer"
+            (click)="addSocial('instagram')"
+          ></lucide-icon>
+
+          <span
+            class="absolute top-7 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition bg-black text-white text-xs px-2 py-1 rounded"
+          >
+            Instagram
+          </span>
+        </div>
+
+        <!-- Facebook -->
+        <div class="relative group">
+          <lucide-icon
+            name="facebook"
+            class="w-5 h-5 cursor-pointer"
+            (click)="addSocial('facebook')"
+          ></lucide-icon>
+
+          <span
+            class="absolute top-7 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition bg-black text-white text-xs px-2 py-1 rounded"
+          >
+            Facebook
+          </span>
+        </div>
+
+        <!-- Twitch -->
+        <div class="relative group">
+          <lucide-icon
+            name="twitch"
+            class="w-5 h-5 cursor-pointer"
+            (click)="addSocial('twitch')"
+          ></lucide-icon>
+
+          <span
+            class="absolute top-7 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition bg-black text-white text-xs px-2 py-1 rounded"
+          >
+            Twitch
+          </span>
+        </div>
+
+        <!-- LinkedIn -->
+        <div class="relative group">
+          <lucide-icon
+            name="linkedin"
+            class="w-5 h-5 cursor-pointer"
+            (click)="addSocial('linkedin')"
+          ></lucide-icon>
+
+          <span
+            class="absolute top-7 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition bg-black text-white text-xs px-2 py-1 rounded"
+          >
+            LinkedIn
+          </span>
+        </div>
+
+        <!-- GitHub -->
+        <div class="relative group">
+          <lucide-icon
+            name="github"
+            class="w-5 h-5 cursor-pointer"
+            (click)="addSocial('github')"
+          ></lucide-icon>
+
+          <span
+            class="absolute top-7 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition bg-black text-white text-xs px-2 py-1 rounded"
+          >
+            GitHub
+          </span>
+        </div>
+
+        <!-- Slack -->
+        <div class="relative group">
+          <lucide-icon
+            name="slack"
+            class="w-5 h-5 cursor-pointer"
+            (click)="addSocial('slack')"
+          ></lucide-icon>
+
+          <span
+            class="absolute top-7 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition bg-black text-white text-xs px-2 py-1 rounded"
+          >
+            Slack
+          </span>
+        </div>
       </div>
     </div>
   </div>

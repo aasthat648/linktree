@@ -78,14 +78,16 @@ export class Link implements OnInit {
   }
 
   selectSocial(item: any) {
-    this.selectedItems.push({
+    const newItem = {
       platform: item.platform,
+      icon: item.icon,
       title: '',
       link: '',
-      icon: item.icon,
-      enabled: true,
-    });
-    this.togglePopup();
+    };
+
+    this.selectedItems.unshift(newItem);
+
+    this.showPopup = false;
   }
 
   // create link
@@ -114,6 +116,22 @@ export class Link implements OnInit {
         this.toastr.error('already exist');
       },
     });
+  }
+
+  addSocial(platform: string) {
+    const item = this.socialItems.find((s) => s.platform.toLowerCase() === platform.toLowerCase());
+
+    if (!item) return;
+
+    const newItem = {
+      platform: item.platform,
+      icon: item.icon,
+      title: '',
+      link: '',
+    };
+
+    // Add card at TOP
+    this.selectedItems.unshift(newItem);
   }
 
   // get link
