@@ -6,3 +6,5 @@ export * from "./clicks";
 export * from "./admin";
 export * from "./home";
 export * from "./analytics";
+export * from "./admin-users";
+export * from "./admin-links";

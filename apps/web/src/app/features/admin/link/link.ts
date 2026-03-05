@@ -1,6 +1,6 @@
 import { AdminLinksService } from '@/app/core/services/admin/links-service';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { AdminLinksResponse } from '@linktree/validation';
 
 @Component({
@@ -16,7 +16,10 @@ export class LinkComponent {
   togglingId: string | null = null;
   deletingId: string | null = null;
 
-  constructor(private adminLinksService: AdminLinksService) {}
+  constructor(
+    private adminLinksService: AdminLinksService,
+    private cd: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     this.loadLinks();
@@ -29,10 +32,12 @@ export class LinkComponent {
       next: (res) => {
         this.links = res.data ?? [];
         this.loading = false;
+        this.cd.detectChanges();
       },
       error: () => {
         this.error = 'Failed to load links';
         this.loading = false;
+        this.cd.detectChanges();
       },
     });
   }
@@ -59,10 +64,12 @@ export class LinkComponent {
       next: () => {
         this.loadLinks();
         this.togglingId = null;
+        this.cd.detectChanges();
       },
       error: () => {
         this.error = 'Failed to update link status';
         this.togglingId = null;
+        this.cd.detectChanges();
       },
     });
   }
@@ -73,10 +80,12 @@ export class LinkComponent {
       next: () => {
         this.loadLinks();
         this.deletingId = null;
+        this.cd.detectChanges();
       },
       error: () => {
         this.error = 'Failed to delete link';
         this.deletingId = null;
+        this.cd.detectChanges();
       },
     });
   }

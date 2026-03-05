@@ -1,6 +1,6 @@
 import { AdminUsersService } from '@/app/core/services/admin/users-service';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { AdminUsersResponse } from '@linktree/validation';
 
 @Component({
@@ -15,7 +15,10 @@ export class User {
   error: string | null = null;
   togglingId: string | null = null;
 
-  constructor(private adminUsersService: AdminUsersService) {}
+  constructor(
+    private adminUsersService: AdminUsersService,
+    private cd: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     this.loadUsers();
@@ -28,6 +31,7 @@ export class User {
       next: (res) => {
         this.users = res.data ?? [];
         this.loading = false;
+        this.cd.detectChanges();
       },
       error: () => {
         this.error = 'Failed to load users';
@@ -50,10 +54,12 @@ export class User {
       next: () => {
         this.loadUsers();
         this.togglingId = null;
+        this.cd.detectChanges();
       },
       error: () => {
         this.error = 'Failed to update user status';
         this.togglingId = null;
+        this.cd.detectChanges();
       },
     });
   }
