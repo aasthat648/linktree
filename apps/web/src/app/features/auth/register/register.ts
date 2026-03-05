@@ -45,6 +45,7 @@ export class Register {
       Validators.required,
       Validators.minLength(3),
       Validators.maxLength(20),
+      Validators.pattern(/^[A-Z].*$/),
     ]),
   });
 
