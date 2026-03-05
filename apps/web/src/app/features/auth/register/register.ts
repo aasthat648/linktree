@@ -63,8 +63,6 @@ export class Register {
       },
       error: (err) => {
         const errorMessage = this.errorHandleService.handleStatus(err.status);
-        this.toastr.error(errorMessage);
-        console.log(err.error);
       },
     });
   }

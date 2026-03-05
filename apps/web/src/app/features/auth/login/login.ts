@@ -50,7 +50,6 @@ export class Login {
       },
       error: (err) => {
         const errorMessage = this.errorHandleService.handleStatus(err.status);
-        this.toastr.error(errorMessage);
       },
     });
   }

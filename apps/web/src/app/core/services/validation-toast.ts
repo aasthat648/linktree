@@ -37,6 +37,11 @@ export class ValidationToastService {
         this.toastr.error('Password cannot exceed 20 characters');
         return false;
       }
+      const value = password.value as string;
+      if (value && value[0] !== value[0].toUpperCase()) {
+        this.toastr.error('Password must start with a capital letter');
+        return false;
+      }
     }
 
     return true;
@@ -85,7 +90,7 @@ export class ValidationToastService {
         return false;
       }
       if (name.errors?.['minlength']) {
-        this.toastr.error('Name must contain at least 1 character');
+        this.toastr.error('Name must contain at least 2 character');
         return false;
       }
       if (name.errors?.['maxlength']) {
@@ -101,6 +106,11 @@ export class ValidationToastService {
       }
       if (password.errors?.['minlength']) {
         this.toastr.error('Password must be at least 8 characters');
+        return false;
+      }
+      const value = password.value as string;
+      if (value && value[0] !== value[0].toUpperCase()) {
+        this.toastr.error('Password must start with a capital letter');
         return false;
       }
     }

@@ -1,7 +1,10 @@
+import { ProfileService } from '@/app/core/services/profile-service';
 import { AuthStore } from '@/app/store/auth';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
+import { UpdateProfileBody } from '@linktree/validation';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-username',
@@ -9,31 +12,59 @@ import { Router, RouterLink } from '@angular/router';
   templateUrl: './username.html',
 })
 export class Username {
-  constructor(
-    private authStore: AuthStore,
-    private router: Router,
-  ) {}
-
   usernameForm = new FormGroup({
     username: new FormControl('', Validators.required),
   });
 
-  ngOnInit(): void {
-    const user = this.authStore.snapshot;
+  loading: boolean = false;
 
-    if (user?.username) {
-      this.usernameForm.patchValue({
-        username: user.username,
-      });
-    }
+  constructor(
+    private authStore: AuthStore,
+    private router: Router,
+    private profileService: ProfileService,
+    private cd: ChangeDetectorRef,
+    private toastr: ToastrService,
+  ) {}
+
+  ngOnInit(): void {
+    this.profileService.getProfile().subscribe((res) => {
+      if (res?.data?.username) {
+        this.usernameForm.patchValue({ username: res.data.username });
+        this.cd.detectChanges();
+      }
+    });
   }
 
+  // username.ts
   handleUsername() {
-    if (this.usernameForm.invalid) return;
+    const username = this.usernameForm.value.username?.trim();
 
-    const username = this.usernameForm.value.username;
-    console.log(username);
+    if (!username) {
+      this.toastr.error('Please enter a valid username');
+      return;
+    }
 
-    this.router.navigate(['/dashboard']);
+    this.loading = true;
+
+    this.profileService.updateUsername(username).subscribe({
+      next: (res) => {
+        this.loading = false;
+
+        if (res?.data?.username) {
+          const currentUser = this.authStore.snapshot;
+
+          if (currentUser) {
+            this.authStore.setUser({ ...currentUser, username: res.data.username });
+          }
+
+          this.toastr.success('Username updated successfully');
+          this.router.navigate(['/dashboard']);
+        }
+      },
+      error: (err) => {
+        this.loading = false;
+        this.toastr.error(err?.error?.message || 'Failed to update username');
+      },
+    });
   }
 }

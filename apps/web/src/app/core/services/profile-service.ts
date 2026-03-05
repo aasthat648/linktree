@@ -33,4 +33,11 @@ export class ProfileService {
       formData,
     );
   }
+
+  // profile-service.ts
+  updateUsername(username: string) {
+    return this.http.patch<ApiResponse<ProfileResponse>>(`${this.API_URL}/change-username`, {
+      username,
+    });
+  }
 }

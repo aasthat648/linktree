@@ -58,7 +58,7 @@ export const createProfileService = async (
       avatar_url,
     });
 
-    console.log('Profile created: ', profile);
+    // console.log('Profile created: ', profile);
 
     const user = await User.findOne({ _id: user_id });
     if (!user) {
@@ -161,13 +161,16 @@ export const changeUsernameService = async (
       return fail('ALREADY_EXISTS', 'Username already exists');
     }
 
+    console.log('User details', userId, '--', data);
+
     const user = await User.findOneAndUpdate(
-      { user_id: userId },
+      { _id: userId },
       { username: data.username },
       { new: true }
     );
 
     if (!user) {
+      console.log('User not found');
       return fail('NOT_FOUND', 'User not found');
     }
 
