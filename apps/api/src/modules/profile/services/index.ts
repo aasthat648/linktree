@@ -1,30 +1,30 @@
-import { Profile } from '@/models/profile';
-import { User } from '@/models/users';
-import { createThemeService } from '@/modules/theme/services';
-import { generateToken } from '@/utils';
-import { fail, ok, Result } from '@/utils/result';
+import { Profile } from "@/models/profile";
+import { User } from "@/models/users";
+import { createThemeService } from "@/modules/theme/services";
+import { generateToken } from "@/utils";
+import { fail, ok, Result } from "@/utils/result";
 import {
   ChangeUsernameBody,
   CreateProfileBody,
   ProfileResponse,
   UpdateProfileBody,
   UserResponse,
-} from '@linktree/validation';
+} from "@linktree/validation";
 
 export const getProfileService = async (
-  userId: string
+  userId: string,
 ): Promise<Result<ProfileResponse>> => {
   try {
     const profile = await Profile.findOne({ user_id: userId });
 
     if (!profile) {
-      console.log('profile', profile);
-      return fail('NOT_FOUND', 'User not found');
+      console.log("profile", profile);
+      return fail("NOT_FOUND", "User not found");
     }
 
     const user = await User.findOne({ _id: userId });
     if (!user) {
-      return fail('NOT_FOUND', 'User not found');
+      return fail("NOT_FOUND", "User not found");
     }
 
     const response: ProfileResponse = {
@@ -41,12 +41,12 @@ export const getProfileService = async (
     return ok(response);
   } catch (error) {
     console.log(error);
-    return fail('DB_ERROR', 'Failed to get user profile');
+    return fail("DB_ERROR", "Failed to get user profile");
   }
 };
 
 export const createProfileService = async (
-  data: CreateProfileBody
+  data: CreateProfileBody,
 ): Promise<Result<ProfileResponse>> => {
   try {
     const { user_id, display_name, bio, avatar_url } = data;
@@ -62,7 +62,7 @@ export const createProfileService = async (
 
     const user = await User.findOne({ _id: user_id });
     if (!user) {
-      return fail('NOT_FOUND', 'User not found');
+      return fail("NOT_FOUND", "User not found");
     }
 
     const response: ProfileResponse = {
@@ -78,50 +78,52 @@ export const createProfileService = async (
 
     await createThemeService(user_id, {
       background: {
-        type: 'gradient',
-        value: 'linear-gradient(135deg, #1e293b, #0f172a)',
+        type: "gradient",
+        value: " linear-gradient(180deg, #5cabff, #042e71)",
       },
 
       button: {
-        variant: 'solid',
-        radius: 'rounded',
-        color: '#6366f1', // Indigo-500 vibe
-        textColor: '#ffffff',
+        variant: "solid",
+        radius: "rounded",
+        color: "#6366f1", // Indigo-500 vibe
+        textColor: "#ffffff",
       },
 
       text: {
-        font: 'Inter',
-        pageColor: '#e2e8f0', // Soft slate-200
-        titleColor: '#ffffff',
+        font: "Inter",
+        pageColor: "#e2e8f0", // Soft slate-200
+        titleColor: "#ffffff",
       },
     });
 
     return ok(response);
   } catch (error) {
     console.log(error);
-    return fail('DB_ERROR', 'Failed to create user profile');
+    return fail("DB_ERROR", "Failed to create user profile");
   }
 };
 
 export const updateProfileService = async (
   userId: string,
-  data: UpdateProfileBody
+  data: UpdateProfileBody,
 ): Promise<Result<ProfileResponse>> => {
   try {
-    const isUsernameExists = await User.findOne({ username: data.username }).lean();
+    const isUsernameExists = await User.findOne({
+      username: data.username,
+    }).lean();
 
     if (isUsernameExists && isUsernameExists._id.toString() !== userId) {
-      return fail('ALREADY_EXISTS', 'Username already exists');
+      return fail("ALREADY_EXISTS", "Username already exists");
     }
 
     const user = await User.findOneAndUpdate(
       { _id: userId },
       { username: data.username },
-      { new: true }
+      { new: true },
     );
 
     if (!user) {
-      return fail('NOT_FOUND', 'User not found');
+      return fail("NOT_FOUND", "User not found");
     }
 
     const profile = await Profile.findOneAndUpdate({ user_id: userId }, data, {
@@ -129,7 +131,7 @@ export const updateProfileService = async (
     });
 
     if (!profile) {
-      return fail('NOT_FOUND', 'Profile not found');
+      return fail("NOT_FOUND", "Profile not found");
     }
 
     const response: ProfileResponse = {
@@ -146,32 +148,34 @@ export const updateProfileService = async (
     return ok(response);
   } catch (error) {
     console.log(error);
-    return fail('DB_ERROR', 'Failed to update user profile');
+    return fail("DB_ERROR", "Failed to update user profile");
   }
 };
 
 export const changeUsernameService = async (
   userId: string,
-  data: ChangeUsernameBody
+  data: ChangeUsernameBody,
 ): Promise<Result<UserResponse>> => {
   try {
-    const isUsernameExists = await User.findOne({ username: data.username }).lean();
+    const isUsernameExists = await User.findOne({
+      username: data.username,
+    }).lean();
 
     if (isUsernameExists && isUsernameExists._id.toString() !== userId) {
-      return fail('ALREADY_EXISTS', 'Username already exists');
+      return fail("ALREADY_EXISTS", "Username already exists");
     }
 
-    console.log('User details', userId, '--', data);
+    console.log("User details", userId, "--", data);
 
     const user = await User.findOneAndUpdate(
       { _id: userId },
       { username: data.username },
-      { new: true }
+      { new: true },
     );
 
     if (!user) {
-      console.log('User not found');
-      return fail('NOT_FOUND', 'User not found');
+      console.log("User not found");
+      return fail("NOT_FOUND", "User not found");
     }
 
     const token = generateToken({
@@ -192,7 +196,7 @@ export const changeUsernameService = async (
     return ok(response);
   } catch (error) {
     console.log(error);
-    return fail('DB_ERROR', 'Failed to change username');
+    return fail("DB_ERROR", "Failed to change username");
   }
 };
 
