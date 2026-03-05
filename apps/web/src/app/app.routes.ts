@@ -72,6 +72,11 @@ export const routes: Routes = [
   // },
 
   {
+    path: 'notfound',
+    loadComponent: () => import('./features/not-found/not-found').then((m) => m.NotFound),
+  },
+
+  {
     path: 'admin',
     loadComponent: () =>
       import('./layout/admindashboard/admindashboard').then((m) => m.admindashboardLayout),

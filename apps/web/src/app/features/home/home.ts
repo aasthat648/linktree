@@ -58,49 +58,54 @@ export class Home {
     const path = this.router.url;
     // console.log(path.slice(1));
 
-    this.homeService.getHomePage(path.slice(1)).subscribe((res) => {
+    this.homeService.getHomePage(path.slice(1)).subscribe({
       // console.log('res', res);
-      if (res && res.data) {
-        // PROFILE
+      next: (res) => {
+        if (res && res.data) {
+          // PROFILE
 
-        this.name = res.data.profile.display_name ?? '';
-        this.username = res.data.user.username ?? '';
-        if (res.data.profile.avatar_url) {
-          this.avatarUrl = `${environment.backend}${res?.data?.profile?.avatar_url}`;
-        } else {
-          this.avatarUrl = res.data.profile.avatar_url ?? '';
+          this.name = res.data.profile.display_name ?? '';
+          this.username = res.data.user.username ?? '';
+          if (res.data.profile.avatar_url) {
+            this.avatarUrl = `${environment.backend}${res?.data?.profile?.avatar_url}`;
+          } else {
+            this.avatarUrl = res.data.profile.avatar_url ?? '';
+          }
+
+          // LINKS
+
+          this.links = res.data.links;
+          this.links = res.data.links.map((link) => {
+            const iconItem = this.socialItems.find(
+              (item) => item.platform === link.platform.toLowerCase(),
+            );
+            return {
+              ...link,
+              icon: iconItem ? iconItem.icon : '', // add icon path
+            };
+          });
+
+          // THEME
+
+          this.theme = res.data.theme;
+          // console.log(this.theme);
+
+          // console.log('data: ', {
+          //   name: this.name,
+          //   username: this.username,
+          //   avatarUrl: this.avatarUrl,
+          //   links: this.links,
+          //   theme: this.theme,
+          // });
+
+          this.selectedFont = res.data?.theme?.text?.font ?? 'font-sans';
+
+          this.cd.detectChanges();
         }
-
-        // LINKS
-
-        this.links = res.data.links;
-        this.links = res.data.links.map((link) => {
-          const iconItem = this.socialItems.find(
-            (item) => item.platform === link.platform.toLowerCase(),
-          );
-          return {
-            ...link,
-            icon: iconItem ? iconItem.icon : '', // add icon path
-          };
-        });
-
-        // THEME
-
-        this.theme = res.data.theme;
-        // console.log(this.theme);
-
-        // console.log('data: ', {
-        //   name: this.name,
-        //   username: this.username,
-        //   avatarUrl: this.avatarUrl,
-        //   links: this.links,
-        //   theme: this.theme,
-        // });
-
-        this.selectedFont = res.data?.theme?.text?.font ?? 'font-sans';
-
-        this.cd.detectChanges();
-      }
+      },
+      error: () => {
+        this.router.navigate(['notfound']);
+      },
     });
 
     this.homeService.incrementHomePageClicks(path.slice(1)).subscribe((res) => {
